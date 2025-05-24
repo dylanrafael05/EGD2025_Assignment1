@@ -1,0 +1,68 @@
+using Unity.Mathematics;
+/// <summary>
+/// A helper class containing useful methods for mathematics, built on the
+/// architecture and conventions provided by the <see cref="Unity.Mathematics"/>
+/// namespace.
+/// </summary>
+public static class MathUtils
+{
+    /// <summary>
+    /// Compute a smooth interpolation kernel (ranged between zero and one)
+    /// for the provided two-dimensional value.
+    /// </summary>
+    public static float2 Smootherstep(float2 x)
+    {
+        return x * x * x * (x * (6.0f * x - 15.0f) + 10.0f);
+    }
+
+    /// <summary>
+    /// Compute a matrix whose rows are the corners of the unit-size bounding square
+    /// aligned to integer coordinates within which <paramref name="x"/> resides. 
+    /// 
+    /// The order of resultant corners is always <c>[t00, t01, t11, t10]</c>, where
+    /// <c>tXY</c> represents the top-left corner <c>t</c> of the box, summed with the
+    /// vector <c>[X, Y]</c>.
+    /// </summary>
+    public static float2x4 Corners(float2 x)
+    {
+        var xf = math.floor(x);
+
+        return new()
+        {
+            [0] = xf + math.float2(0, 0),
+            [1] = xf + math.float2(0, 1),
+            [2] = xf + math.float2(1, 1),
+            [3] = xf + math.float2(1, 0),
+        };
+    }
+
+    /// <summary>
+    /// Perform bilinear sampling at the provided position <paramref name="x"/> between the 
+    /// provided <paramref name="corners"/> values (ordered as defined by <see cref="Corners(float2)"/>)
+    /// </summary>
+    public static float SampleCorners(float2 x, float2x2 corners)
+    {
+        float2 f = Smootherstep(math.frac(x));
+
+        return math.lerp(
+            math.lerp(corners[0][0], corners[0][1], f.y),
+            math.lerp(corners[1][0], corners[1][1], f.y),
+            f.x);
+    }
+
+    /// <summary>
+    /// Compute the result of perlin noise at the normalized position <paramref name="x"/>
+    /// with the corner gradients (in the order defined by <see cref="Corners(float2)"/>)
+    /// as defined by <paramref name="grads"/>.
+    /// </summary>
+    public static float PerlinNoiseFromGrads(float2 x, float2x4 grads)
+    {
+        var corners = math.float2x2(
+            math.dot(grads[0], x - math.float2(0, 0)),
+            math.dot(grads[1], x - math.float2(0, 1)),
+            math.dot(grads[2], x - math.float2(1, 1)),
+            math.dot(grads[3], x - math.float2(1, 0)));
+
+        return SampleCorners(x, corners) * 0.5f + 0.5f;
+    }
+}
