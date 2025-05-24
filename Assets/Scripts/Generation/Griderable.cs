@@ -26,6 +26,14 @@ public readonly struct Griderable : IEnumerable<int2>
     /// </summary>
     public static Griderable For(int2 min, int2 max)
         => new(min, max);
+        
+    /// <summary>
+    /// Create a Griderable which will iterate all points between
+    /// <paramref name="min"/> (inclusive) and <paramref name="max"/>
+    /// (inclusive).
+    /// </summary>
+    public static Griderable ForInclusive(int2 min, int2 max)
+        => new(min, max + 1);
 
     /// <summary>
     /// Create a Griderable which will iterate all points between
@@ -34,6 +42,14 @@ public readonly struct Griderable : IEnumerable<int2>
     /// </summary>
     public static Griderable For(int2 max)
         => new(int2.zero, max);
+        
+    /// <summary>
+    /// Create a Griderable which will iterate all points between
+    /// <c>[0, 0]</c> (inclusive) and <paramref name="max"/>
+    /// (inclusive).
+    /// </summary>
+    public static Griderable ForInclusive(int2 max)
+        => new(int2.zero, max + 1);
 
     // Enumerator //
     public Enumerator GetEnumerator()

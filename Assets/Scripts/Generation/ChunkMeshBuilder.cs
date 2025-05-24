@@ -1,3 +1,4 @@
+using System;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -30,7 +31,7 @@ public readonly struct ChunkMeshBuilder
         public ref T this[int2 xy]
             => ref this[xy.x, xy.y];
         public ref T this[int x, int y]
-            => ref array[x * gridCount + y];
+            => ref array[x * (gridCount + 1) + y];
     }
 
     // Public APIs //
@@ -50,13 +51,14 @@ public readonly struct ChunkMeshBuilder
 
         // Set mesh data variables based on what has been constructed so far //
         mesh.SetVertices(vertices);
+        mesh.SetTriangles(triangles, 0);
         mesh.SetColors(colors);
         mesh.SetUVs(0, uvs);
-        mesh.SetTriangles(triangles, 0);
 
         // Calculate information from these parameters //
         mesh.RecalculateBounds();
         mesh.RecalculateNormals();
+        mesh.RecalculateTangents();
 
         return mesh;
     }
@@ -82,25 +84,33 @@ public readonly struct ChunkMeshBuilder
         var offsetForCenter = gridCount / 2 * unitSideLength;
 
         // Generate vertices //
-        foreach (var (i, j) in Griderable.For(gridCount))
+        foreach (var (i, j) in Griderable.ForInclusive(gridCount))
         {
-            vertices[vertIndex++] = new Vector3(
+            vertices[vertIndex] = new Vector3(
                 x: i * unitSideLength - offsetForCenter,
                 y: 0,
                 z: j * unitSideLength - offsetForCenter);
+
+            uvs[vertIndex] = new Vector2(
+                x: i / (gridCount - 1f),
+                y: j / (gridCount - 1f));
+
+            colors[vertIndex] = Color.white;
+
+            vertIndex++;
         }
 
         // Generate triangles //
-        foreach (var (i, j) in Griderable.For(gridCount - 1))
+        foreach (var (i, j) in Griderable.For(gridCount))
         {
-            var baseIndex = i * gridCount + j;
+            var baseIndex = i * (gridCount + 1) + j;
 
             triangles[triIndex++] = baseIndex;
-            triangles[triIndex++] = baseIndex + gridCount;
+            triangles[triIndex++] = baseIndex + (gridCount + 1);
             triangles[triIndex++] = baseIndex + 1;
 
-            triangles[triIndex++] = baseIndex + gridCount;
-            triangles[triIndex++] = baseIndex + gridCount + 1;
+            triangles[triIndex++] = baseIndex + (gridCount + 1);
+            triangles[triIndex++] = baseIndex + (gridCount + 1) + 1;
             triangles[triIndex++] = baseIndex + 1;
         }
     }

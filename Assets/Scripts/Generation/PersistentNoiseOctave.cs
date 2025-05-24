@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Unity.Mathematics;
+using UnityEngine;
 using UnityEngine.Pool;
 /// <summary>
 /// A class which facilitates perlin noise generation with persistence that can
@@ -29,13 +30,10 @@ public class PersistentNoiseOctave
             throw new ArgumentException("Octave scale must be positive and non-nan", nameof(scale));
 
         octaveScale = scale;
-        rand = new(math.asuint(scale));
     }
 
     // Fields //
     private readonly float octaveScale;
-    private readonly Unity.Mathematics.Random rand;
-    // We store our random here ^ so we dont recreate it every time we need it //
 
     private readonly Dictionary<ChunkID, HashSet<float2>> chunkToUsedGrads = new();
     private readonly Dictionary<float2, GradValue> grads = new();
@@ -104,14 +102,11 @@ public class PersistentNoiseOctave
     {
         // Find the cached gradients //
         var used = GetUsedGrads(chunk);
-        GradValue grad;
 
-        if (grads.ContainsKey(xy))
+        if (grads.TryGetValue(xy, out var grad))
         {
             // If the gradient exists, ensure the provided chunk is //
             // marked as using it                                   //
-            grad = grads[xy];
-
             if (!used.Contains(xy))
             {
                 used.Add(xy);
@@ -124,13 +119,13 @@ public class PersistentNoiseOctave
             grad = new GradValue
             {
                 useCount = 1,
-                value = rand.NextFloat2Direction()
+                value = UnityEngine.Random.insideUnitCircle.normalized
             };
 
             used.Add(xy);
-            grads[xy] = grad;
         }
 
+        grads[xy] = grad;
         return grad.value;
     }
 
@@ -143,6 +138,7 @@ public class PersistentNoiseOctave
         // Multiply our position by our octave scale to facilitate //
         // easier manipulation of fractal noise                    //
         position *= octaveScale;
+        // position.x *= 100;
 
         //! SAFETY !//
         // Since .Corners uses floor and addition to calculate corners

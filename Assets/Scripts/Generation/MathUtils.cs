@@ -1,4 +1,5 @@
 using Unity.Mathematics;
+
 /// <summary>
 /// A helper class containing useful methods for mathematics, built on the
 /// architecture and conventions provided by the <see cref="Unity.Mathematics"/>
@@ -27,26 +28,25 @@ public static class MathUtils
     {
         var xf = math.floor(x);
 
-        return new()
-        {
-            [0] = xf + math.float2(0, 0),
-            [1] = xf + math.float2(0, 1),
-            [2] = xf + math.float2(1, 1),
-            [3] = xf + math.float2(1, 0),
-        };
+        return math.float2x4(
+            xf + math.float2(0, 0),
+            xf + math.float2(0, 1),
+            xf + math.float2(1, 1),
+            xf + math.float2(1, 0));
     }
 
     /// <summary>
     /// Perform bilinear sampling at the provided position <paramref name="x"/> between the 
     /// provided <paramref name="corners"/> values (ordered as defined by <see cref="Corners(float2)"/>)
     /// </summary>
-    public static float SampleCorners(float2 x, float2x2 corners)
+    public static float SampleCorners(float2 x, float4 corners)
     {
         float2 f = Smootherstep(math.frac(x));
 
+        //? Does it make sense that the corners are passed this way ?//
         return math.lerp(
-            math.lerp(corners[0][0], corners[0][1], f.y),
-            math.lerp(corners[1][0], corners[1][1], f.y),
+            math.lerp(corners[0], corners[1], f.y),
+            math.lerp(corners[3], corners[2], f.y),
             f.x);
     }
 
@@ -57,11 +57,11 @@ public static class MathUtils
     /// </summary>
     public static float PerlinNoiseFromGrads(float2 x, float2x4 grads)
     {
-        var corners = math.float2x2(
-            math.dot(grads[0], x - math.float2(0, 0)),
-            math.dot(grads[1], x - math.float2(0, 1)),
-            math.dot(grads[2], x - math.float2(1, 1)),
-            math.dot(grads[3], x - math.float2(1, 0)));
+        var corners = math.float4(
+            math.dot(grads.c0, x - math.float2(0, 0)),
+            math.dot(grads.c1, x - math.float2(0, 1)),
+            math.dot(grads.c2, x - math.float2(1, 1)),
+            math.dot(grads.c3, x - math.float2(1, 0)));
 
         return SampleCorners(x, corners) * 0.5f + 0.5f;
     }

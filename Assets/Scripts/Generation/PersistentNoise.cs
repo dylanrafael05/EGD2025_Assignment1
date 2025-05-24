@@ -10,17 +10,26 @@ using System.Collections.Generic;
 /// </summary>
 public class PersistentNoise
 {
-    private readonly Dictionary<float, PersistentNoiseOctave> _octaves = new();
+    private readonly Dictionary<float, PersistentNoiseOctave> octaves = new();
+
+    /// <summary>
+    /// Calls <see cref="PersistentNoiseOctave.UnloadChunk(ChunkID)"/> on all created octaves.
+    /// </summary>
+    public void UnloadChunk(ChunkID id)
+    {
+        foreach (var octave in octaves.Values)
+            octave.UnloadChunk(id);
+    }
 
     /// <summary>
     /// Get the octave instance for the provided scale.
     /// </summary>
     public PersistentNoiseOctave Octave(float octave)
     {
-        if (!_octaves.TryGetValue(octave, out var result))
+        if (!octaves.TryGetValue(octave, out var result))
         {
             result = new(octave);
-            _octaves[octave] = result;
+            octaves[octave] = result;
         }
 
         return result;
