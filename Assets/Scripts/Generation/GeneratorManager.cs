@@ -33,6 +33,12 @@ public class GeneratorManager : MonoBehaviour
     public float UnitSideLength => gridSideLength / gridCount;
     public int GenerationRadiusInChunks => Mathf.CeilToInt(generationRadius / gridSideLength);
 
+    public int2 WorldToChunkPosition(float2 position)
+        => (int2)math.floor(position / gridSideLength);
+
+    public ChunkInstance WorldToChunkInstance(float2 position)
+        => loadedChunks.GetValueOrDefault(WorldToChunkPosition(position), null);
+
     /// <summary>
     /// Generate a new chunk at the given location.
     /// </summary>
@@ -60,10 +66,18 @@ public class GeneratorManager : MonoBehaviour
 
             // Populate vertex colors based on vertex height //
             chunk.Mesher.Colors[pos] = groundColor.Evaluate(Mathf.InverseLerp(groundColorMinHeight, groundColorMaxHeight, vertex.y));
+
+            var scl = 10;
+            var vpos2 = vertex.tofloat3().xz;
+            vpos2 += (float2)location * gridSideLength;
+            if (math.abs(GenerationUtils.Noise.Octave(0.5f/scl).Get(chunk.ID, vpos2) - GenerationUtils.Noise.Octave(0.25f/scl).Get(chunk.ID, vpos2 + 100)) < 0.1f/scl)
+            {
+                chunk.Mesher.Colors[pos] = Color.black;
+            }
         }
 
         // Finalize the mesh and update the instance location //
-        chunk.Mesher.UpdateMeshInfo();
+        chunk.UpdateMeshInfo();
         chunk.transform.position = new(
             x: location.x * gridSideLength,
             y: 0,
@@ -75,13 +89,13 @@ public class GeneratorManager : MonoBehaviour
             chunk.transform.position.z,
             chunk.transform.position.x + gridSideLength,
             chunk.transform.position.z + gridSideLength);
+            
+        // Cache this chunk //
+        loadedChunks.Add(location, chunk);
 
         // Place props //
         foreach (var placer in propPlacers)
             placer.PlaceInChunk(chunk);
-
-        // Cache this chunk //
-        loadedChunks.Add(location, chunk);
     }
 
     void Awake()
@@ -98,7 +112,7 @@ public class GeneratorManager : MonoBehaviour
 
     void Update()
     {
-        var center = (int2)math.floor(generationCenter.position.tofloat3().xz / gridSideLength);
+        var center = WorldToChunkPosition(generationCenter.position.tofloat3().xz);
 
         // Unload all chunks that are too far away //
         // This should happen first so new chunks can use those unloaded here //

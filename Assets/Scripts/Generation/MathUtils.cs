@@ -17,6 +17,21 @@ public static class MathUtils
     }
 
     /// <summary>
+    /// Get the barycentric coordinates of the provided position <paramref name="r"/>
+    /// within the triangle defined by the three rows in <paramref name="tri"/>.
+    /// </summary>
+    public static float3 Barycentric(float2x3 tri, float2 r)
+    {
+        // Get the denominator //
+        var d = math.dot(tri[0] - tri[2], tri[1] - tri[2]);
+
+        var l1 = math.dot(r - tri[2], tri[1] - tri[2]) / d;
+        var l2 = math.dot(r - tri[2], tri[0] - tri[1]) / d;
+
+        return math.float3(l1, l2, 1 - l1 - l2);
+    }
+
+    /// <summary>
     /// Compute a matrix whose rows are the corners of the unit-size bounding square
     /// aligned to integer coordinates within which <paramref name="x"/> resides. 
     /// 

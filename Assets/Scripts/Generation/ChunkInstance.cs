@@ -38,12 +38,15 @@ public class ChunkInstance : PoolableBehaviour
         _renderer = GetComponent<MeshRenderer>();
         _collider = GetComponent<MeshCollider>();
 
+        mesh = new(GeneratorManager.Instance.gridCount, GeneratorManager.Instance.UnitSideLength);
+    }
+
+    public void UpdateMeshInfo()
+    {
+        Mesher.UpdateMeshInfo();
+
         _filter.mesh = Mesher.Mesh;
         _collider.sharedMesh = Mesher.Mesh;
-
-        print("Erm what the fuck.");
-
-        mesh = new(GeneratorManager.Instance.gridCount, GeneratorManager.Instance.UnitSideLength);
     }
 
     public void AttachProp(PoolableBehaviour prop)

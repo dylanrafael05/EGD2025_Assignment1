@@ -6,23 +6,22 @@ public class ForestPlacer : ScenePropPlacer
     [SerializeField] private float densityMapScale;
     [SerializeField] private float maxChance;
     [SerializeField] private float sampleSize;
+    [SerializeField] private float chancePower = 1;
 
     public override void PlaceInChunk(ChunkInstance chunk)
     {
         var sampleCount = Mathf.RoundToInt(chunk.Bounds.width / sampleSize);
-        var sampleStep = sampleCount * sampleSize;
+        var sampleStep = chunk.Bounds.width / (sampleCount + 1);
 
-        foreach (var off in Griderable.For(sampleCount))
+        foreach (var offset in Griderable.For(sampleCount))
         {
-            var offset = off - sampleCount / 2;
-
-            var pos = chunk.transform.position.tofloat3().xz + math.float2(offset) * sampleStep;
+            var pos = chunk.Bounds.min.tofloat2() + (math.float2(offset) + 0.5f) * sampleStep;
 
             var density = GenerationUtils.Noise.Octave(densityMapScale).Get(chunk.ID, pos);
 
-            if (UnityEngine.Random.value < density * maxChance)
+            if (UnityEngine.Random.value < math.pow(density, chancePower) * maxChance)
             {
-                var nudge = UnityEngine.Random.insideUnitCircle * sampleStep;
+                var nudge = UnityEngine.Random.insideUnitCircle * sampleStep / 2;
 
                 AttemptCreate(chunk, pos + (float2)nudge);
             }

@@ -21,29 +21,49 @@ public class ChunkMesher
     public readonly struct Adaptor<T>
     {
         private readonly T[] array;
-        private readonly int gridCount;
+        private readonly ChunkMesher mesher;
 
-        public Adaptor(T[] array, int gridCount)
+        public Adaptor(T[] array, ChunkMesher mesher)
         {
             this.array = array;
-            this.gridCount = gridCount;
+            this.mesher = mesher;
         }
 
         public ref T this[int2 xy]
-            => ref this[xy.x, xy.y];
+            => ref array[mesher.GridPositionToIndex(xy)];
         public ref T this[int x, int y]
-            => ref array[x * (gridCount + 1) + y];
+            => ref this[math.int2(x, y)];
     }
 
     // Public APIs //
     public int GridCount => gridCount;
     public float UnitSideLength => unitSideLength;
 
-    public Adaptor<Vector3> Vertices => new(vertices, gridCount);
-    public Adaptor<Color> Colors => new(colors, gridCount);
-    public Adaptor<Vector2> UVs => new(uvs, gridCount);
+    public Adaptor<Vector3> Vertices => new(vertices, this);
+    public Adaptor<Color> Colors => new(colors, this);
+    public Adaptor<Vector2> UVs => new(uvs, this);
 
     public Mesh Mesh => mesh;
+
+    /// <summary>
+    /// Helper method to get the underlying data index of the provided
+    /// grid position, <paramref name="position"/>.
+    /// </summary>
+    public int GridPositionToIndex(int2 position)
+        => position.x * (gridCount + 1) + position.y;
+
+    /// <summary>
+    /// Helper method to convert from world position (starting at 0, 0)
+    /// to the indices within this mesh's grid as well as the fractional part
+    /// between the grid positions.
+    /// </summary>
+    public void WorldToGridPosition(float2 position, out int2 gridPosition, out float2 gridFrac)
+    {
+        var divd = position / UnitSideLength;
+
+        gridPosition = math.int2(divd);
+        gridFrac = math.frac(divd);
+    }
 
     /// <summary>
     /// Build the information in this instance out to the associated mesh instance

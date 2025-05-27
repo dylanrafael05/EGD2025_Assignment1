@@ -1,3 +1,4 @@
+using System;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -18,14 +19,19 @@ public abstract class ScenePropPlacer : MonoBehaviour
 
     public abstract void PlaceInChunk(ChunkInstance chunk);
 
-    protected SceneProp AttemptCreate(ChunkInstance chunk, float2 position, float heightFromGround = 0, bool checkForOverlap = false)
+    protected SceneProp AttemptCreate(ChunkInstance chunk, float2 position, bool checkForOverlap = false)
     {
+        if (!chunk.Bounds.Contains(position))
+            throw new InvalidOperationException("Cannot place an object in a chunk if it is not actually in that object.");
+        
         var prop = instancePool.Get();
 
-        var groundedPosition = position.xxy;
-        groundedPosition.y = heightFromGround + GenerationUtils.GroundHeightAt(position);
+        var pos = position.xxy;
+        pos.y = GenerationUtils.GroundHeightAt(position);
+        
+        prop.transform.position = pos;
+        prop.ApplyRandomization();
 
-        prop.transform.position = groundedPosition;
         var permit = true;
 
         if (checkForOverlap)
