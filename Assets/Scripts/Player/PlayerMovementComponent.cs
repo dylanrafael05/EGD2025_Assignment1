@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -14,13 +15,33 @@ public class PlayerMovementComponent : MonoBehaviour
 
 
 
-    public bool GenericMove(Vector2 moveVector)
+    public bool GenericMove(Vector2 moveVector, float rotation)
     {
-        rb.linearVelocity = new Vector3(moveVector.x*playerSpeed, rb.linearVelocity.y, moveVector.y*playerSpeed);
+        Debug.Log(rotation);
+        
+        float3 tempVector = new float3(moveVector.x * playerSpeed * Time.deltaTime,
+                                        rb.linearVelocity.y,
+                                        moveVector.y * playerSpeed * Time.deltaTime);
+
+        tempVector = Quaternion.Euler(0, rotation, 0) * tempVector;
+        rb.linearVelocity = tempVector;
+        
+        Debug.Log(Mathf.Cos(rotation * Mathf.Deg2Rad));
+        //SnapToGround();
         if (moveVector.x == 0 && moveVector.y == 0)
         {
             return false;
         }
         return true;
+    }
+
+    private float SnapToGround()
+    {
+        float y = GenerationUtils.GroundHeightAt(transform.position.tofloat3().xz);
+        if (float.IsNaN(y)) {
+            return 0.0f;
+        }
+        transform.position = new Vector3(transform.position.x, y, transform.position.z);
+        return y;
     }
 }
