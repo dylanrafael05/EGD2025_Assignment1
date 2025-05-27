@@ -8,6 +8,7 @@ public class PlayerMovementComponent : MonoBehaviour
     private Rigidbody rb;
 
 
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -17,16 +18,11 @@ public class PlayerMovementComponent : MonoBehaviour
 
     public bool GenericMove(Vector2 moveVector, float rotation)
     {
-        Debug.Log(rotation);
-        
         float3 tempVector = new float3(moveVector.x * playerSpeed * Time.deltaTime,
                                         rb.linearVelocity.y,
                                         moveVector.y * playerSpeed * Time.deltaTime);
-
-        tempVector = Quaternion.Euler(0, rotation, 0) * tempVector;
-        rb.linearVelocity = tempVector;
+        rb.linearVelocity = Quaternion.Euler(0, rotation, 0) * tempVector;;
         
-        Debug.Log(Mathf.Cos(rotation * Mathf.Deg2Rad));
         //SnapToGround();
         if (moveVector.x == 0 && moveVector.y == 0)
         {

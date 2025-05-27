@@ -7,7 +7,6 @@ public class InputManager : MonoBehaviour
     [NonSerialized] public static InputManager instance; 
     private InputAction moveAction;
     [NonSerialized] public Vector2 moveVector; // [x, z] floats
-
     private InputAction cameraAction;
     //[NonSerialized] public bool justPressedRotate;
     [NonSerialized] public float cameraFloat;

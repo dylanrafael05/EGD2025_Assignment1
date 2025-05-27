@@ -5,8 +5,9 @@ public class CameraComponent : MonoBehaviour
     [SerializeField] private GameObject cameraSocket;
     [SerializeField] private Camera cameraComponent;
     [SerializeField] private float rotationLerpFactor;
-
     private float desiredRotation = 45;
+
+
 
     public float GenericPerspective(float direction)
     {
