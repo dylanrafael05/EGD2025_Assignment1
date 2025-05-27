@@ -10,7 +10,7 @@ public class GeneratorManager : MonoBehaviour
 
     // Editor variables //
     [Header("Settings")]
-    [SerializeField] private ChunkRenderer chunkPrefab;
+    [SerializeField] private ChunkInstance chunkPrefab;
     [SerializeField] private Transform generationCenter;
     [SerializeField] private float generationRadius;
 
@@ -20,14 +20,15 @@ public class GeneratorManager : MonoBehaviour
 
     [Header("Generation Settings")]
     [SerializeField] private OctaveInformation[] heightOctaves;
+    [SerializeField] private ScenePropPlacer[] propPlacers;
     [SerializeField] private float groundColorMinHeight;
     [SerializeField] private float groundColorMaxHeight;
     [SerializeField] private Gradient groundColor;
 
     // Implementation variables //
-    private PersistentNoise noise = new();
-    private ObjectPool<ChunkRenderer> chunkPool;
-    private readonly Dictionary<int2, ChunkRenderer> loadedChunks = new();
+    private InstancePool<ChunkInstance> chunkPool;
+
+    private readonly Dictionary<int2, ChunkInstance> loadedChunks = new();
 
     public float UnitSideLength => gridSideLength / gridCount;
     public int GenerationRadiusInChunks => Mathf.CeilToInt(generationRadius / gridSideLength);
@@ -43,12 +44,9 @@ public class GeneratorManager : MonoBehaviour
         chunk.ID = ChunkID.Unique();
         chunk.Position = location;
 
-        // Construct the mesh for this chunk //
-        var builder = new ChunkMeshBuilder(gridCount, UnitSideLength);
-
         foreach (var pos in Griderable.ForInclusive(gridCount))
         {
-            ref var vertex = ref builder.Vertices[pos];
+            ref var vertex = ref chunk.Mesher.Vertices[pos];
 
             // Apply height offsets for every octave calculated //
             foreach (var octave in heightOctaves)
@@ -56,21 +54,31 @@ public class GeneratorManager : MonoBehaviour
                 var vpos = vertex.tofloat3().xz;
                 vpos += (float2)location * gridSideLength;
 
-                vertex.y += (noise.Octave(octave.scale).Get(chunk.ID, vpos) * 2 - 1)
+                vertex.y += (GenerationUtils.Noise.Octave(octave.scale).Get(chunk.ID, vpos) * 2 - 1)
                     * octave.amplitude;
             }
 
             // Populate vertex colors based on vertex height //
-            builder.Colors[pos] = groundColor.Evaluate(Mathf.InverseLerp(groundColorMinHeight, groundColorMaxHeight, vertex.y));
+            chunk.Mesher.Colors[pos] = groundColor.Evaluate(Mathf.InverseLerp(groundColorMinHeight, groundColorMaxHeight, vertex.y));
         }
 
         // Finalize the mesh and update the instance location //
-        chunk.SetMesh(builder.Build());
+        chunk.Mesher.UpdateMeshInfo();
         chunk.transform.position = new(
             x: location.x * gridSideLength,
             y: 0,
             z: location.y * gridSideLength
         );
+
+        chunk.Bounds = Rect.MinMaxRect(
+            chunk.transform.position.x,
+            chunk.transform.position.z,
+            chunk.transform.position.x + gridSideLength,
+            chunk.transform.position.z + gridSideLength);
+
+        // Place props //
+        foreach (var placer in propPlacers)
+            placer.PlaceInChunk(chunk);
 
         // Cache this chunk //
         loadedChunks.Add(location, chunk);
@@ -82,11 +90,7 @@ public class GeneratorManager : MonoBehaviour
         Instance = this;
 
         // Setup the pool for the chunks //
-        chunkPool = new(
-            createFunc: () => GameObject.Instantiate(chunkPrefab, Instance.transform),
-            actionOnGet: r => r.Activate(),
-            actionOnRelease: r => r.Deactivate()
-        );
+        chunkPool = InstancePool.OfPrefab(chunkPrefab, transform);
     }
 
     bool ChunkShouldCull(int2 chunk, int2 center)
@@ -94,7 +98,7 @@ public class GeneratorManager : MonoBehaviour
 
     void Update()
     {
-        var center = (int2)math.floor(generationCenter.position.tofloat3().xz / gridSideLength + 0.5f);
+        var center = (int2)math.floor(generationCenter.position.tofloat3().xz / gridSideLength);
 
         // Unload all chunks that are too far away //
         // This should happen first so new chunks can use those unloaded here //
@@ -111,7 +115,7 @@ public class GeneratorManager : MonoBehaviour
         foreach (var chunk in chunksToUnload)
         {
             loadedChunks.Remove(chunk, out var instance);
-            noise.UnloadChunk(instance.ID);
+            GenerationUtils.Noise.UnloadChunk(instance.ID);
             chunkPool.Release(instance);
         }
 
@@ -121,7 +125,7 @@ public class GeneratorManager : MonoBehaviour
         foreach (var offset in Griderable.ForInclusive(-GenerationRadiusInChunks, GenerationRadiusInChunks))
         {
             var chunk = offset + center;
-            
+
             if (ChunkShouldCull(chunk, center))
                 continue;
 

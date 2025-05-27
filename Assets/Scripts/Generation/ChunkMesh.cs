@@ -2,7 +2,7 @@ using System;
 using Unity.Mathematics;
 using UnityEngine;
 
-public readonly struct ChunkMeshBuilder
+public class ChunkMesher
 {
     // Private fields //
     private readonly int gridCount;
@@ -11,6 +11,7 @@ public readonly struct ChunkMeshBuilder
     private readonly Color[] colors;
     private readonly Vector2[] uvs;
     private readonly int[] triangles;
+    private readonly Mesh mesh;
 
     /// <summary>
     /// An adaptor around some array which provides multidimensional
@@ -42,13 +43,13 @@ public readonly struct ChunkMeshBuilder
     public Adaptor<Color> Colors => new(colors, gridCount);
     public Adaptor<Vector2> UVs => new(uvs, gridCount);
 
-    /// <summary>
-    /// Build the information in this instance out to a mesh
-    /// </summary>
-    public Mesh Build()
-    {
-        var mesh = new Mesh();
+    public Mesh Mesh => mesh;
 
+    /// <summary>
+    /// Build the information in this instance out to the associated mesh instance
+    /// </summary>
+    public void UpdateMeshInfo()
+    {
         // Set mesh data variables based on what has been constructed so far //
         mesh.SetVertices(vertices);
         mesh.SetTriangles(triangles, 0);
@@ -59,37 +60,20 @@ public readonly struct ChunkMeshBuilder
         mesh.RecalculateBounds();
         mesh.RecalculateNormals();
         mesh.RecalculateTangents();
-
-        return mesh;
     }
 
-    /// <summary>
-    /// Create a mesh builder configured for the provided settings.
-    /// </summary>
-    public ChunkMeshBuilder(int gridCount, float unitSideLength)
+    public void Reset()
     {
-        this.gridCount = gridCount;
-        this.unitSideLength = unitSideLength;
-
-        var vertCount = gridCount * gridCount + 2 * gridCount + 1;
-
-        vertices = new Vector3[vertCount];
-        colors = new Color[vertCount];
-        uvs = new Vector2[vertCount];
-        triangles = new int[gridCount * gridCount * 2 * 3];
-
         var triIndex = 0;
         var vertIndex = 0;
 
-        var offsetForCenter = gridCount / 2 * unitSideLength;
-
-        // Generate vertices //
+        // Reset vertices //
         foreach (var (i, j) in Griderable.ForInclusive(gridCount))
         {
             vertices[vertIndex] = new Vector3(
-                x: i * unitSideLength - offsetForCenter,
+                x: i * unitSideLength,
                 y: 0,
-                z: j * unitSideLength - offsetForCenter);
+                z: j * unitSideLength);
 
             uvs[vertIndex] = new Vector2(
                 x: i / (gridCount - 1f),
@@ -100,7 +84,7 @@ public readonly struct ChunkMeshBuilder
             vertIndex++;
         }
 
-        // Generate triangles //
+        // v triangles //
         foreach (var (i, j) in Griderable.For(gridCount))
         {
             var baseIndex = i * (gridCount + 1) + j;
@@ -113,5 +97,25 @@ public readonly struct ChunkMeshBuilder
             triangles[triIndex++] = baseIndex + (gridCount + 1) + 1;
             triangles[triIndex++] = baseIndex + 1;
         }
+    }
+
+    /// <summary>
+    /// Create a mesh builder configured for the provided settings.
+    /// </summary>
+    public ChunkMesher(int gridCount, float unitSideLength)
+    {
+        this.gridCount = gridCount;
+        this.unitSideLength = unitSideLength;
+
+        var vertCount = gridCount * gridCount + 2 * gridCount + 1;
+
+        vertices = new Vector3[vertCount];
+        colors = new Color[vertCount];
+        uvs = new Vector2[vertCount];
+        triangles = new int[gridCount * gridCount * 2 * 3];
+
+        mesh = new();
+
+        Reset();
     }
 }

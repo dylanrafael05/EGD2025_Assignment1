@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 /// <summary>
-/// A wrapper around <see cref="PersistentNoiseOctave"/> which facilitates
+/// A wrapper around <see cref="PersistentPerlinNoiseOctave"/> which facilitates
 /// simple construction of fractal noise.
 /// 
 /// <para>
@@ -8,12 +8,12 @@ using System.Collections.Generic;
 /// a mass increase in memory usage, and potential errors, and is thus unadvised.
 /// </para>
 /// </summary>
-public class PersistentNoise
+public class PersistentPerlinNoise
 {
-    private readonly Dictionary<float, PersistentNoiseOctave> octaves = new();
+    private readonly Dictionary<float, PersistentPerlinNoiseOctave> octaves = new();
 
     /// <summary>
-    /// Calls <see cref="PersistentNoiseOctave.UnloadChunk(ChunkID)"/> on all created octaves.
+    /// Calls <see cref="PersistentPerlinNoiseOctave.UnloadChunk(ChunkID)"/> on all created octaves.
     /// </summary>
     public void UnloadChunk(ChunkID id)
     {
@@ -24,7 +24,7 @@ public class PersistentNoise
     /// <summary>
     /// Get the octave instance for the provided scale.
     /// </summary>
-    public PersistentNoiseOctave Octave(float octave)
+    public PersistentPerlinNoiseOctave Octave(float octave)
     {
         if (!octaves.TryGetValue(octave, out var result))
         {
