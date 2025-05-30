@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -33,15 +35,45 @@ public class ChunkMesher
             => ref array[mesher.GridPositionToIndex(xy)];
         public ref T this[int x, int y]
             => ref this[math.int2(x, y)];
+
+        public T[] Unraveled => array;
+    }
+
+    /// <summary>
+    /// A simple adaptor to permit indexing into the triangles array
+    /// by triangle.
+    /// </summary>
+    public readonly struct TriAdaptor
+    {
+        private readonly ChunkMesher mesher;
+
+        public TriAdaptor(ChunkMesher mesher)
+        {
+            this.mesher = mesher;
+        }
+
+        public unsafe ref int3 this[int x]
+        {
+            get
+            {
+                fixed (int* ptr = &mesher.triangles[x * 3])
+                {
+                    return ref *(int3*)ptr;
+                }
+            }
+        }
     }
 
     // Public APIs //
     public int GridCount => gridCount;
     public float UnitSideLength => unitSideLength;
+    public int TriCount => triangles.Length / 3;
 
     public Adaptor<Vector3> Vertices => new(vertices, this);
     public Adaptor<Color> Colors => new(colors, this);
     public Adaptor<Vector2> UVs => new(uvs, this);
+    public IReadOnlyList<int> TrianglesUnwrapped => triangles;
+    public TriAdaptor Triangles => new(this);
 
     public Mesh Mesh => mesh;
 
@@ -50,7 +82,7 @@ public class ChunkMesher
     /// grid position, <paramref name="position"/>.
     /// </summary>
     public int GridPositionToIndex(int2 position)
-        => position.x * (gridCount + 1) + position.y;
+        => position.x + position.y * (gridCount + 1);
 
     /// <summary>
     /// Helper method to convert from world position (starting at 0, 0)
@@ -82,12 +114,12 @@ public class ChunkMesher
         mesh.RecalculateTangents();
     }
 
-    public void Reset()
+    public void GenerateGrid()
     {
         var triIndex = 0;
         var vertIndex = 0;
 
-        // Reset vertices //
+        // Vertices //
         foreach (var (i, j) in Griderable.ForInclusive(gridCount))
         {
             vertices[vertIndex] = new Vector3(
@@ -104,7 +136,7 @@ public class ChunkMesher
             vertIndex++;
         }
 
-        // v triangles //
+        // Triangles //
         foreach (var (i, j) in Griderable.For(gridCount))
         {
             var baseIndex = i * (gridCount + 1) + j;
@@ -122,7 +154,7 @@ public class ChunkMesher
     /// <summary>
     /// Create a mesh builder configured for the provided settings.
     /// </summary>
-    public ChunkMesher(int gridCount, float unitSideLength)
+    public ChunkMesher(int gridCount, float unitSideLength, bool setToGrid = true)
     {
         this.gridCount = gridCount;
         this.unitSideLength = unitSideLength;
@@ -136,6 +168,23 @@ public class ChunkMesher
 
         mesh = new();
 
-        Reset();
+        if (setToGrid)
+        {
+            GenerateGrid();
+        }
+    }
+
+    /// <summary>
+    /// Create an element by element copy of another mesher.
+    /// </summary>
+    public void CloneFrom(ChunkMesher other)
+    {
+        if (gridCount != other.gridCount || unitSideLength != other.unitSideLength)
+            throw new ArgumentException("ChunkMesher instances must only clone from those with the same size.", nameof(other));
+
+        other.vertices.CopyTo(vertices, 0);
+        other.uvs.CopyTo(uvs, 0);
+        other.colors.CopyTo(colors, 0);
+        other.triangles.CopyTo(triangles, 0);
     }
 }

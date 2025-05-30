@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Mathematics;
 /// <summary>
 /// A wrapper around <see cref="PersistentPerlinNoiseOctave"/> which facilitates
 /// simple construction of fractal noise.
@@ -33,5 +34,25 @@ public class PersistentPerlinNoise
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Evaluate the provided octaves at the provided position.
+    /// </summary>
+    public float Get(ChunkID id, float2 pos, bool normalize = false, params OctaveInformation[] octaves)
+    {
+        float result = 0;
+        float weightSum = 0;
+
+        foreach (var octave in octaves)
+        {
+            result += Octave(octave.scale).Get(id, pos) * octave.amplitude;
+            weightSum += octave.amplitude;
+        }
+
+        if (!normalize)
+            weightSum = 1;
+
+        return result / weightSum;
     }
 }

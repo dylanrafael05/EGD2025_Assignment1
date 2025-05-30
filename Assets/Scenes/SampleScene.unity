@@ -523,8 +523,8 @@ MonoBehaviour:
   chunkPrefab: {fileID: 262342419577004255, guid: 0af5b68ceed945248b7217dbee3d4c6a, type: 3}
   generationCenter: {fileID: 509796447}
   generationRadius: 25
-  gridCount: 8
-  gridSideLength: 3
+  gridCount: 16
+  gridSideLength: 6
   heightOctaves:
   - scale: 0.04
     amplitude: 6
@@ -534,10 +534,32 @@ MonoBehaviour:
     amplitude: 0.2
   - scale: 0.5
     amplitude: 0.1
+  forestOctaves:
+  - scale: 0.05
+    amplitude: 1
+  - scale: 0.08
+    amplitude: 0.1
+  pathFirstOctaves:
+  - scale: 0.03
+    amplitude: 1
+  - scale: 0.12
+    amplitude: 1
+  pathSecondOctaves:
+  - scale: 0.015
+    amplitude: 1
+  - scale: 0.06
+    amplitude: 1
+  pathMixOctaves:
+  - scale: 0.01
+    amplitude: 1
+  pathSubOctaves:
+  - scale: 0.02
+    amplitude: 1
   propPlacers:
   - {fileID: 1538519190}
-  groundColorMinHeight: -3
-  groundColorMaxHeight: 3
+  groundColorMinHeight: 0
+  groundColorMaxHeight: 6
+  pathColor: {r: 0.23773581, g: 0.19318196, b: 0.15923813, a: 1}
   groundColor:
     serializedVersion: 2
     key0: {r: 0.5698112, g: 0.5698112, b: 0.5698112, a: 1}
@@ -564,10 +586,13 @@ MonoBehaviour:
     atime5: 0
     atime6: 0
     atime7: 0
-    m_Mode: 1
+    m_Mode: 2
     m_ColorSpace: -1
     m_NumColorKeys: 6
     m_NumAlphaKeys: 2
+  pathSearchRadius: 0.5
+  pathIndent: 0.1
+  pathSubEffect: 0.1
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -695,8 +720,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 3861969245844480926, guid: af46b7a3d7aa4584c8515a2b28ab0fe6, type: 3}
-  densityMapScale: 0.02
-  maxChance: 0.9
+  maxChance: 10
   sampleSize: 1
   chancePower: 5
 --- !u!1 &1834133694

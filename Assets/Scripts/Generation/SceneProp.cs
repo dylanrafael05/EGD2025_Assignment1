@@ -9,6 +9,9 @@ public class SceneProp : PoolableBehaviour
     [SerializeField] private float minSize;
     [SerializeField] private float maxSize;
 
+    [Header("Debugging")]
+    [SerializeField] private bool debugGround;
+
     public BoxCollider Bounds => bounds;
 
     public void ApplyRandomization()
@@ -20,5 +23,14 @@ public class SceneProp : PoolableBehaviour
 
         var scale = UnityEngine.Random.Range(minSize, maxSize);
         transform.localScale = new Vector3(scale, scale, scale);
+    }
+
+    void Update()
+    {
+        if (debugGround)
+        {
+            var position = transform.position.tofloat3().xz;
+            GenerationUtils.GroundHeightAt(position, debug: true);
+        }
     }
 }

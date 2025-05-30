@@ -1,4 +1,5 @@
 using Unity.Mathematics;
+using UnityEngine;
 
 /// <summary>
 /// A helper class containing useful methods for mathematics, built on the
@@ -17,19 +18,45 @@ public static class MathUtils
     }
 
     /// <summary>
+    /// Equivalent to <c>a.x * b.y - b.x * a.y</c>.
+    /// </summary>
+    public static float CrossDot(float2 a, float2 b)
+    {
+        return a.x * b.y - b.x * a.y;
+    }
+
+    /// <summary>
     /// Get the barycentric coordinates of the provided position <paramref name="r"/>
     /// within the triangle defined by the three rows in <paramref name="tri"/>.
     /// </summary>
     public static float3 Barycentric(float2x3 tri, float2 r)
     {
         // Get the denominator //
-        var d = math.dot(tri[0] - tri[2], tri[1] - tri[2]);
+        var d = CrossDot(tri[0] - tri[2], tri[1] - tri[2]);
 
-        var l1 = math.dot(r - tri[2], tri[1] - tri[2]) / d;
-        var l2 = math.dot(r - tri[2], tri[0] - tri[1]) / d;
+        var l1 = CrossDot(r - tri[2], tri[1] - tri[2]) / d;
+        var l2 = CrossDot(r - tri[2], tri[2] - tri[0]) / d;
 
         return math.float3(l1, l2, 1 - l1 - l2);
     }
+
+    /// <summary>
+    /// A matrix whose rows are the permutations of two binary values, 
+    /// defined in the order
+    /// <c>{[0] = (0, 0), [1] = (0, 1), [2] = (1, 1), [3] = (1, 0)}</c>.
+    /// </summary>
+    public static float2x4 BinaryPairs => math.float2x4(
+        math.float2(0, 0),
+        math.float2(0, 1),
+        math.float2(1, 1),
+        math.float2(1, 0)
+    );
+
+    /// <summary>
+    /// A matrix whose rows are the permutations of the two signs,
+    /// defined in the same order as is <see cref="BinaryPairs"/>.
+    /// </summary>
+    public static float2x4 SignPairs => BinaryPairs * 2 - 1;
 
     /// <summary>
     /// Compute a matrix whose rows are the corners of the unit-size bounding square
@@ -43,11 +70,7 @@ public static class MathUtils
     {
         var xf = math.floor(x);
 
-        return math.float2x4(
-            xf + math.float2(0, 0),
-            xf + math.float2(0, 1),
-            xf + math.float2(1, 1),
-            xf + math.float2(1, 0));
+        return math.float2x4(xf, xf, xf, xf) + BinaryPairs;
     }
 
     /// <summary>

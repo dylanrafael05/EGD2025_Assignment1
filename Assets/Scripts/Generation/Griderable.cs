@@ -4,7 +4,7 @@ using Unity.Mathematics;
 
 /// <summary>
 /// A utility class to facilitate iteration over a two-dimensional grid of integers
-/// without needing to nest loops.
+/// without needing to nest loops, iterating the x-direction first then the y-direction.
 /// </summary>
 public readonly struct Griderable : IEnumerable<int2>
 {

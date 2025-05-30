@@ -8,11 +8,12 @@ using UnityEngine;
 public class ChunkInstance : PoolableBehaviour
 {
     [SerializeField] private GameObject propContainer;
+    [SerializeField] private MeshFilter roadFilter;
+    [SerializeField] private MeshCollider roadCollider;
 
     private MeshFilter _filter;
     private MeshRenderer _renderer;
     private MeshCollider _collider;
-    private ChunkMesher mesh;
     private List<PoolableBehaviour> props = new();
 
     /// <summary>
@@ -29,8 +30,31 @@ public class ChunkInstance : PoolableBehaviour
     public Rect Bounds { get; set; }
     /// <summary>
     /// The mesh data associated with this chunk.
+    /// 
+    /// <para>
+    /// ! Safety !
+    /// <br/>
+    /// It is assumed that triangle information, uv information, and vertex x and z coordinates
+    /// do not change after this instance is first created.
+    /// </para>
     /// </summary>
-    public ChunkMesher Mesher => mesh;
+    public ChunkMesher GroundMesher { get; private set; }
+    /// <summary>
+    /// The mesh data associated with the 'roads' of this chunk.
+    /// 
+    /// <para>
+    /// ! Safety !
+    /// <br/>
+    /// It is assumed that triangle information, uv information, and vertex x and z coordinates
+    /// do not change after this instance is first created.
+    /// </para>
+    /// </summary>
+    public ChunkMesher PathMesher { get; private set; }
+
+    /// <summary>
+    /// Whether or not this chunk is fresh and needs setup, or can rely on already existing data.
+    /// </summary>
+    public bool NeedsInitialization { get; set; } = true;
 
     void Awake()
     {
@@ -38,15 +62,20 @@ public class ChunkInstance : PoolableBehaviour
         _renderer = GetComponent<MeshRenderer>();
         _collider = GetComponent<MeshCollider>();
 
-        mesh = new(GeneratorManager.Instance.gridCount, GeneratorManager.Instance.UnitSideLength);
+        GroundMesher ??= new(GeneratorManager.Instance.gridCount, GeneratorManager.Instance.UnitSideLength);
+        PathMesher ??= new(GeneratorManager.Instance.gridCount, GeneratorManager.Instance.UnitSideLength);
     }
 
     public void UpdateMeshInfo()
     {
-        Mesher.UpdateMeshInfo();
+        GroundMesher.UpdateMeshInfo();
+        PathMesher.UpdateMeshInfo();
 
-        _filter.mesh = Mesher.Mesh;
-        _collider.sharedMesh = Mesher.Mesh;
+        _filter.mesh = GroundMesher.Mesh;
+        _collider.sharedMesh = GroundMesher.Mesh;
+
+        roadFilter.mesh = PathMesher.Mesh;
+        roadCollider.sharedMesh = PathMesher.Mesh;
     }
 
     public void AttachProp(PoolableBehaviour prop)
@@ -65,6 +94,5 @@ public class ChunkInstance : PoolableBehaviour
         }
 
         props.Clear();
-        Mesher.Reset();
     }
 }
