@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -38,6 +39,7 @@ public class GeneratorManager : MonoBehaviour
     // Implementation variables //
     private InstancePool<ChunkInstance> chunkPool;
 
+    private readonly HashSet<int2> generatingChunks = new();
     private readonly Dictionary<int2, ChunkInstance> loadedChunks = new();
 
     public float UnitSideLength => gridSideLength / gridCount;
@@ -49,22 +51,22 @@ public class GeneratorManager : MonoBehaviour
     public ChunkInstance WorldToChunkInstance(float2 position)
         => loadedChunks.GetValueOrDefault(WorldToChunkPosition(position), null);
 
-    public float GetForestChance(ChunkID id, float2 pos)
+    public float CalcForestChance(ChunkID id, float2 pos)
         => GenerationUtils.Noise.Get(id, pos, true, octaves: forestOctaves)
-         * math.pow(1 - GetTerrainHeight(id, pos, normalize: true), 0.5f);
+         * math.pow(1 - CalcTerrainHeight(id, pos, normalize: true), 0.5f);
 
-    public float GetPathHeightmapAtLocation(ChunkID id, float2 pos)
+    public float CalcPathHeightmapAtLocation(ChunkID id, float2 pos)
         => math.lerp(
             GenerationUtils.Noise.Get(id, pos, true, octaves: pathFirstOctaves) * 2 - 1,
             GenerationUtils.Noise.Get(id, pos, true, octaves: pathSecondOctaves) * 2 - 1,
             GenerationUtils.Noise.Get(id, pos, true, octaves: pathMixOctaves)
         ) - GenerationUtils.Noise.Get(id, pos, true, octaves: pathSubOctaves) * pathSubEffect;
 
-    public bool GetIsPath(ChunkID id, float2 pos)
+    public bool CalcIsPath(ChunkID id, float2 pos)
     {
         // Optimization :: heightmap values that are too far away from zero 
         // can be assumed not to border zero (unless the paths are way too large)
-        var heightmap = GetPathHeightmapAtLocation(id, pos);
+        var heightmap = CalcPathHeightmapAtLocation(id, pos);
         if (math.abs(heightmap) > 0.1f)
             return false;
 
@@ -74,7 +76,7 @@ public class GeneratorManager : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             var p = pos + pathSearchRadius * MathUtils.SignPairs[i];
-            var h = GetPathHeightmapAtLocation(id, p);
+            var h = CalcPathHeightmapAtLocation(id, p);
 
             if (h > 0) seenPos = true;
             else seenNeg = true;
@@ -86,7 +88,7 @@ public class GeneratorManager : MonoBehaviour
         return false;
     }
 
-    public float GetTerrainHeight(ChunkID id, float2 pos, bool normalize = false)
+    public float CalcTerrainHeight(ChunkID id, float2 pos, bool normalize = false)
         => GenerationUtils.Noise.Get(id, pos, normalize, octaves: heightOctaves);
 
     private void GenerateHeight(ChunkInstance chunk)
@@ -101,7 +103,7 @@ public class GeneratorManager : MonoBehaviour
             var vpos = vertex.tofloat3().xz;
             vpos += (float2)chunk.Position * gridSideLength;
 
-            vertex.y = GetTerrainHeight(chunk.ID, vpos);
+            vertex.y = CalcTerrainHeight(chunk.ID, vpos);
 
             // Populate vertex colors based on vertex height //
             chunk.GroundMesher.Colors[pos] = groundColor.Evaluate(Mathf.InverseLerp(groundColorMinHeight, groundColorMaxHeight, vertex.y));
@@ -122,7 +124,7 @@ public class GeneratorManager : MonoBehaviour
             var vpos = pathVertex.tofloat3().xz;
             vpos += (float2)chunk.Position * gridSideLength;
 
-            if (!GetIsPath(chunk.ID, vpos))
+            if (!CalcIsPath(chunk.ID, vpos))
             {
                 pathVertex.y -= pathIndent;
             }
@@ -145,12 +147,13 @@ public class GeneratorManager : MonoBehaviour
     /// <summary>
     /// Generate a new chunk at the given location.
     /// </summary>
-    private void Generate(int2 location)
+    private async UniTask GenerateTask(int2 location)
     {
-        using var marker = ProfilerUtil.Enter("Generation.GenerateChunk");
-
         // Get the instance of the chunk and set up its ID and location //
         var chunk = chunkPool.Get();
+        generatingChunks.Add(location);
+
+        await UniTask.SwitchToThreadPool();
 
         chunk.ID = ChunkID.Unique();
         chunk.Position = location;
@@ -164,6 +167,8 @@ public class GeneratorManager : MonoBehaviour
 
         GenerateHeight(chunk);
         GeneratePaths(chunk);
+
+        await UniTask.SwitchToMainThread();
 
         // Finalize the mesh and update the instance location //
         chunk.UpdateMeshInfo();
@@ -184,6 +189,14 @@ public class GeneratorManager : MonoBehaviour
 
         // Place props //
         GenerateProps(chunk);
+
+        // End generation //
+        generatingChunks.Remove(location);
+    }
+
+    private void Generate(int2 location)
+    {
+        GenerateTask(location).Forget();
     }
 
     void Awake()
@@ -236,7 +249,7 @@ public class GeneratorManager : MonoBehaviour
                 if (ChunkShouldCull(chunk, center))
                     continue;
 
-                if (!loadedChunks.ContainsKey(chunk))
+                if (!loadedChunks.ContainsKey(chunk) && !generatingChunks.Contains(chunk))
                     Generate(chunk);
             }
         }

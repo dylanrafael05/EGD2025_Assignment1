@@ -16,7 +16,7 @@ public class ForestPlacer : ScenePropPlacer
         {
             var pos = chunk.Bounds.min.tofloat2() + (math.float2(offset) + 0.5f) * sampleStep;
 
-            var density = GeneratorManager.Instance.GetForestChance(chunk.ID, pos);
+            var density = GeneratorManager.Instance.CalcForestChance(chunk.ID, pos);
 
             if (UnityEngine.Random.value < math.pow(density, chancePower) * maxChance)
             {

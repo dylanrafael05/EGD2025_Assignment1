@@ -20,10 +20,16 @@ public class PersistentPerlinNoiseOctave
         octaveScale = scale;
     }
 
+    /// <summary>
+    /// Helper method which names the constructor.
+    /// </summary>
+    public static PersistentPerlinNoiseOctave OfScale(float scale)
+        => new(scale);
+
     // Fields //
     private readonly float octaveScale;
     private readonly CachedValueStore<ChunkID, float2, float2> cached = new(
-        _ => UnityEngine.Random.insideUnitCircle.normalized);
+        _ => ThreadSafeRandom.Get().NextFloat2Direction());
 
     /// <summary>
     /// Remove all gradient data associated with the provided chunk ID,

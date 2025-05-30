@@ -22,14 +22,9 @@ public class SimplisticPlayerMovement : MonoBehaviour
     void Update()
     {
         // Snap to the ground on the ray from the camera to this instance //
-        if (Physics.Raycast(
-            new Ray(Camera.main.transform.position, transform.position - Camera.main.transform.position),
-            out var hit,
-            maxDistance: 50f,
-            layerMask: LayerMask.GetMask("Ground")))
-        {
-            transform.position = hit.point;
-        }
+        var loc = transform.position;
+        loc.y = GenerationUtils.StandHeightAt(loc.asfloat3().xz);
+        transform.position = loc;
 
         // Calculate what must happen this frame //
         var dir = float2.zero;

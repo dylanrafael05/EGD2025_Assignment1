@@ -522,7 +522,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chunkPrefab: {fileID: 262342419577004255, guid: 0af5b68ceed945248b7217dbee3d4c6a, type: 3}
   generationCenter: {fileID: 509796447}
-  generationRadius: 25
+  generationRadius: 20
   gridCount: 16
   gridSideLength: 6
   heightOctaves:

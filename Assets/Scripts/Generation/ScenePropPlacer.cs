@@ -34,7 +34,7 @@ public abstract class ScenePropPlacer : MonoBehaviour
 
         var permit = true;
 
-        if (GeneratorManager.Instance.GetIsPath(chunk.ID, position))
+        if (GenerationUtils.IsPathAt(position))
         {
             permit = false;
         }

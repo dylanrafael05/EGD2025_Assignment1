@@ -1,5 +1,9 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using UnityEngine;
 using UnityEngine.Pool;
 
 public class CachedValueStore<ID, K, V>
@@ -8,9 +12,9 @@ public class CachedValueStore<ID, K, V>
     /// A helper struct to store the information needed
     /// by a single gradient in the cache.
     /// </summary>
-    private struct Value
+    private class ValueStorage
     {
-        public int useCount;
+        public int useCount = -1;
         public V value;
     }
 
@@ -20,13 +24,26 @@ public class CachedValueStore<ID, K, V>
     /// </summary>
     public delegate V Generator(K key);
 
-    private readonly Dictionary<ID, HashSet<K>> usages = new();
-    private readonly Dictionary<K, Value> values = new();
+    private readonly ConcurrentDictionary<ID, ConcurrentSet<K>> usages = new();
+    private readonly ConcurrentDictionary<K, ValueStorage> values = new();
     private readonly Generator generator;
+    private readonly Mutex generateMut = new();
+    private readonly Mutex usagesMut = new();
+    private readonly InstancePool<ConcurrentSet<K>> usagesPool;
+    private readonly InstancePool<ValueStorage> valuesPool;
 
     public CachedValueStore(Generator generator)
     {
         this.generator = generator;
+
+        usagesPool = new(
+            create: () => new(),
+            onGet: s => s.Clear()
+        );
+
+        valuesPool = new(
+            create: () => new()
+        );
     }
 
     /// <summary>
@@ -34,14 +51,25 @@ public class CachedValueStore<ID, K, V>
     /// gradients (by position) that are 'used' by the provided chunk id,
     /// <paramref name="chunk"/>.
     /// </summary>
-    private HashSet<K> GetUsedValues(ID id)
+    private ConcurrentSet<K> GetUsedValues(ID id)
     {
-        if (!usages.TryGetValue(id, out var used))
+        ConcurrentSet<K> used;
+
+        if (usages.TryGetValue(id, out used))
+            return used;
+
+        usagesMut.WaitOne();
+
+        if (usages.TryGetValue(id, out used))
         {
-            used = HashSetPool<K>.Get();
-            usages.Add(id, used);
+            usagesMut.ReleaseMutex();
+            return used;
         }
 
+        used = usagesPool.Get();
+        usages.TryAdd(id, used);
+
+        usagesMut.ReleaseMutex();
         return used;
     }
 
@@ -56,23 +84,38 @@ public class CachedValueStore<ID, K, V>
         foreach (var grad in used)
         {
             // Remove one use from its counter //
-            var value = values[grad];
-            value.useCount--;
+            values.TryGetValue(grad, out var value);
+            Interlocked.Decrement(ref value.useCount);
 
             // And remove it if it is now unused //
             if (value.useCount == 0)
             {
-                values.Remove(grad);
-            }
-            else
-            {
-                values[grad] = value;
+                values.TryRemove(grad, out _);
+                valuesPool.Release(value);
             }
         }
 
         // Then free the association set //
-        usages.Remove(id);
-        HashSetPool<K>.Release(used);
+        usages.TryRemove(id, out _);
+        usagesPool.Release(used);
+    }
+
+    /// <summary>
+    /// Get the value (and update the id set) from a pre-existing value.
+    /// </summary>
+    private V GetFromExisting(ID id, K key, ValueStorage value)
+    {
+        var used = GetUsedValues(id);
+
+        // If the gradient exists, ensure the provided chunk is //
+        // marked as using it                                   //
+        if (!used.Contains(key))
+        {
+            Interlocked.Increment(ref value.useCount);
+            used.Add(key);
+        }
+
+        return value.value;
     }
 
     /// <summary>
@@ -80,31 +123,38 @@ public class CachedValueStore<ID, K, V>
     /// </summary>
     public V Get(ID id, K key)
     {
+        // If the value storage already exists, use it directly //
+        ValueStorage value;
+
+        if (values.TryGetValue(key, out value))
+            return GetFromExisting(id, key, value);
+
+        // Otherwise, wait for the mutex to try and create it //
+        if (!generateMut.WaitOne())
+        {
+            Debug.LogError($"Mutex acquistion failed! This is a major issue.");
+        }
+
+        // If another thread has already created it (i.e. it got here first),
+        // then use the value it calculated.
+        if (values.TryGetValue(key, out value))
+        {
+            generateMut.ReleaseMutex();
+            return GetFromExisting(id, key, value);
+        }
+
+        // Otherwise, generate a new storage instance //
         var used = GetUsedValues(id);
 
-        if (values.TryGetValue(key, out var value))
-        {
-            // If the gradient exists, ensure the provided chunk is //
-            // marked as using it                                   //
-            if (!used.Contains(key))
-            {
-                used.Add(key);
-                value.useCount++;
-            }
-        }
-        else
-        {
-            // Otherwise, generate a new gradient //
-            value = new Value
-            {
-                useCount = 1,
-                value = generator(key)
-            };
+        value = valuesPool.Get();
+        value.useCount = 1;
+        value.value = generator(key);
 
-            used.Add(key);
-        }
+        used.Add(key);
+        values.TryAdd(key, value);
 
-        values[key] = value;
+        // Release the mutex //
+        generateMut.ReleaseMutex();
         return value.value;
     }
 }

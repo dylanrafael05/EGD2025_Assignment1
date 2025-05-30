@@ -1,3 +1,4 @@
+using System;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -9,13 +10,92 @@ public static class GenerationUtils
 
     private static bool HasWarnedForInvalidGroundHeight = false;
 
-    public static float GroundHeightAt(float2 location, bool debug = false)
+    /// <summary>
+    /// A helper function to get the triangle information for the provided location.
+    /// </summary>
+    public static bool GetTriangleInformation(float2 location, out ChunkInstance chunk, out float2 localCoordinate, out int2x3 tri)
     {
-        var chunk = GeneratorManager.Instance.WorldToChunkInstance(location);
+        // Assign defaults to prevent compiler from yelling at us //
+        tri = math.int2x3(0);
+        localCoordinate = location;
+
+        // Attempt to get the chunk //
+        chunk = GeneratorManager.Instance.WorldToChunkInstance(location);
+
+        if (chunk is null)
+            return false;
+
+        // Calculate the local and grid coordinates of the location //
+        localCoordinate = location - (float2)chunk.Bounds.min;
+        chunk.GroundMesher.WorldToGridPosition(localCoordinate, out var grid, out var gridFrac);
+
+        // Compute the triangle coordinates //
+        if (gridFrac.x < 1 - gridFrac.y)
+        {
+            tri = math.int2x3(
+                grid + math.int2(0, 0),
+                grid + math.int2(1, 0),
+                grid + math.int2(0, 1)
+            );
+        }
+        else
+        {
+            tri = math.int2x3(
+                grid + math.int2(1, 0),
+                grid + math.int2(1, 1),
+                grid + math.int2(0, 1)
+            );
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// A type defining the type of mesh being referred to in calls to
+    /// <see cref="HeightAt(float2, ChunkMeshKind, bool)"/>.
+    /// </summary>
+    public enum ChunkMeshKind
+    {
+        Path,
+        Ground
+    }
+    
+    /// <summary>
+    /// Check if the ground is a path at the provided location without
+    /// performing the expensive perlin noise calculations.
+    /// </summary>
+    public static bool IsPathAt(float2 location)
+        => PathHeightAt(location) > GroundHeightAt(location);
+        
+    /// <summary>
+    /// Get the greatest height between the path and gronud meshes
+    /// at the provided location.
+    /// </summary>
+    public static float StandHeightAt(float2 location, bool debug = false)
+        => math.max(PathHeightAt(location, debug), GroundHeightAt(location, debug));
+
+    /// <summary>
+    /// Get the height of the path mesh at the provided location.
+    /// </summary>
+    public static float PathHeightAt(float2 location, bool debug = false)
+        => HeightAt(location, ChunkMeshKind.Path, debug);
+
+    /// <summary>
+    /// Get the height of the ground mesh at the provided location.
+    /// </summary>
+    public static float GroundHeightAt(float2 location, bool debug = false)
+        => HeightAt(location, ChunkMeshKind.Ground, debug);
+
+    /// <summary>
+    /// Get the height of the provided mesh type at the provided location.
+    /// </summary>
+    public static float HeightAt(float2 location, ChunkMeshKind mesh, bool debug = false)
+    {
+        var success = GetTriangleInformation(location, out var chunk, out var coordinate, out var triPositions);
 
         // Fall back to raycasting into the scene in the event that the ground has not yet
         // been generated. This is for testing purposes
-        if (chunk is null)
+        if (!success)
         {
             if (!HasWarnedForInvalidGroundHeight)
             {
@@ -37,32 +117,18 @@ public static class GenerationUtils
         }
 
         // Get the triangle indices //
-        var coordinate = location - (float2)chunk.Bounds.min;
-        chunk.GroundMesher.WorldToGridPosition(coordinate, out var grid, out var gridFrac);
-
-        int2x3 triPositions;
-
-        if (gridFrac.x < 1 - gridFrac.y)
+        var mesher = mesh switch
         {
-            triPositions = math.int2x3(
-                grid + math.int2(0, 0),
-                grid + math.int2(1, 0),
-                grid + math.int2(0, 1)
-            );
-        }
-        else
-        {
-            triPositions = math.int2x3(
-                grid + math.int2(1, 0),
-                grid + math.int2(1, 1),
-                grid + math.int2(0, 1)
-            );
-        }
+            ChunkMeshKind.Path => chunk.PathMesher,
+            ChunkMeshKind.Ground => chunk.GroundMesher,
+
+            _ => throw new InvalidOperationException($"Unknown mesh kind {mesh}.")
+        };
 
         float3x3 verts = math.float3x3(
-            chunk.GroundMesher.Vertices[triPositions[0]],
-            chunk.GroundMesher.Vertices[triPositions[1]],
-            chunk.GroundMesher.Vertices[triPositions[2]]);
+            mesher.Vertices[triPositions[0]],
+            mesher.Vertices[triPositions[1]],
+            mesher.Vertices[triPositions[2]]);
 
         float2x3 vertBasePositions = math.float2x3(
             verts[0].xz,
