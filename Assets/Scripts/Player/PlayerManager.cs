@@ -7,8 +7,9 @@ public class PlayerManager : MonoBehaviour
     [NonSerialized] public Vector3 position;
     [NonSerialized] public float rotation;
 
-    private PlayerMovementComponent playerMovementComponent;
-    private CameraComponent cameraComponent;
+    [NonSerialized] private PlayerMovementComponent movementComponent;
+    [NonSerialized] private CameraComponent cameraComponent;
+
 
 
     void Awake()
@@ -22,7 +23,7 @@ public class PlayerManager : MonoBehaviour
     }
     void Start()
     {
-        playerMovementComponent = GetComponent<PlayerMovementComponent>();
+        movementComponent = GetComponent<PlayerMovementComponent>();
         cameraComponent = GetComponent<CameraComponent>();
     }
 
@@ -31,6 +32,6 @@ public class PlayerManager : MonoBehaviour
     void Update()
     {
         rotation = cameraComponent.GenericPerspective(InputManager.instance.cameraFloat);
-        playerMovementComponent.GenericMove(InputManager.instance.moveVector, rotation);
+        movementComponent.GenericMove(InputManager.instance.moveVector, rotation);
     }
 }
