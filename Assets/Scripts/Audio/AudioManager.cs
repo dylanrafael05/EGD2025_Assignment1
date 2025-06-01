@@ -52,12 +52,19 @@ public class AudioManager : MonoBehaviour
             return -1;
         }
 
-        AudioSource activateAudioSource = sourceCache[FindFreeSource()];
+        int ad = FindFreeSource(); // Audio Descriptor
+
+        if (ad == -1)
+        {
+            return -1;
+        }
+
+        AudioSource activateAudioSource = sourceCache[ad];
         activateAudioSource.volume = audioReference[audioName].volume;
         activateAudioSource.clip = audioReference[audioName].clip;
         activateAudioSource.Play();
 
-        return 0;
+        return ad;
     }
 
     public int FindFreeSource()
