@@ -20,9 +20,7 @@ public class InputManager : MonoBehaviour
             return;
         }
         instance = this;
-    }
-    void Start()
-    {
+
         moveAction = InputSystem.actions.FindAction("Move");
         cameraAction = InputSystem.actions.FindAction("Camera");
     }

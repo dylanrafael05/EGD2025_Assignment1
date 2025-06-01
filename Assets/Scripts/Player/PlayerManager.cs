@@ -20,9 +20,7 @@ public class PlayerManager : MonoBehaviour
             return;
         }
         instance = this;
-    }
-    void Start()
-    {
+
         movementComponent = GetComponent<PlayerMovementComponent>();
         cameraComponent = GetComponent<CameraComponent>();
     }

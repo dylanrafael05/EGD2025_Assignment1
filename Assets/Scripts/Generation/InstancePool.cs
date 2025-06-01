@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,11 +11,11 @@ public interface IInstancePool
 
 public static class InstancePool
 {
-    private static readonly Dictionary<object, IInstancePool> pooledInstanceMap = new();
+    private static readonly ConcurrentDictionary<object, IInstancePool> pooledInstanceMap = new();
 
     public static void RegisterObject(object obj, IInstancePool pool)
     {
-        pooledInstanceMap.Add(obj, pool);
+        pooledInstanceMap.TryAdd(obj, pool);
     }
 
     public static IInstancePool GetAssociatedPool(object obj)
@@ -49,13 +50,15 @@ public class InstancePool<T> : IInstancePool
     private readonly Action<T> onGet;
     private readonly Action<T> onRelease;
 
-    private readonly List<T> freeInstances = new();
+    private readonly ConcurrentBag<T> freeInstances = new();
 
-    public InstancePool(Func<T> create, Action<T> onGet, Action<T> onRelease)
+    private static void DoNothing(T _) { }
+
+    public InstancePool(Func<T> create, Action<T> onGet = null, Action<T> onRelease = null)
     {
         this.create = create;
-        this.onGet = onGet;
-        this.onRelease = onRelease;
+        this.onGet = onGet ?? DoNothing;
+        this.onRelease = onRelease ?? DoNothing;
     }
 
     private T CreateAndRegister()
@@ -68,13 +71,8 @@ public class InstancePool<T> : IInstancePool
 
     private T GetWithoutCallback()
     {
-        if (freeInstances.Count != 0)
-        {
-            var instance = freeInstances[^1];
-            freeInstances.RemoveAt(freeInstances.Count - 1);
-
+        if (freeInstances.TryTake(out var instance))
             return instance;
-        }
 
         return CreateAndRegister();
     }

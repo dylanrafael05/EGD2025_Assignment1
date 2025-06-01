@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Unity.Mathematics;
 /// <summary>
@@ -11,7 +12,7 @@ using Unity.Mathematics;
 /// </summary>
 public class PersistentPerlinNoise
 {
-    private readonly Dictionary<float, PersistentPerlinNoiseOctave> octaves = new();
+    private readonly ConcurrentDictionary<float, PersistentPerlinNoiseOctave> octaves = new();
 
     /// <summary>
     /// Calls <see cref="PersistentPerlinNoiseOctave.UnloadChunk(ChunkID)"/> on all created octaves.
@@ -27,13 +28,7 @@ public class PersistentPerlinNoise
     /// </summary>
     public PersistentPerlinNoiseOctave Octave(float octave)
     {
-        if (!octaves.TryGetValue(octave, out var result))
-        {
-            result = new(octave);
-            octaves[octave] = result;
-        }
-
-        return result;
+        return octaves.GetOrAdd(octave, PersistentPerlinNoiseOctave.OfScale);
     }
 
     /// <summary>

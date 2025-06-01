@@ -1,16 +1,17 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Unity.Profiling;
 
 public static class ProfilerUtil
 {
-    private static Dictionary<string, ProfilerMarker> markers = new();
+    private static ConcurrentDictionary<string, ProfilerMarker> markers = new();
 
     public static ProfilerMarker Marker(string name)
     {
         if (!markers.TryGetValue(name, out var marker))
         {
             marker = new(name);
-            markers.Add(name, marker);
+            markers.TryAdd(name, marker);
         }
 
         return marker;
