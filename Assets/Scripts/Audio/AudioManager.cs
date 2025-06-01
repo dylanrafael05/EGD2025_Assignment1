@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    [NonSerialized] public AudioManager instance;
+    [NonSerialized] public static AudioManager instance;
 
     [Header("Audio System")]
     [SerializeField] int sourceCount = 1;
@@ -25,9 +25,7 @@ public class AudioManager : MonoBehaviour
             return;
         }
         instance = this;
-    }
-    void Start()
-    {
+
         audioReference = new Dictionary<string, Audio>();
 
         for (int i = 1; i < sourceCount; i++)
@@ -40,11 +38,37 @@ public class AudioManager : MonoBehaviour
             audioReference.Add(entry.name, entry);
         }
     }
-
-
-
-    public int PlayAudioGeneric()
+    void Start()
     {
+        AudioManager.instance.PlayGeneric("Test");
+    }
+
+
+
+    public int PlayGeneric(String audioName)
+    {
+        if (!audioReference.ContainsKey(audioName))
+        {
+            return -1;
+        }
+
+        AudioSource activateAudioSource = sourceCache[FindFreeSource()];
+        activateAudioSource.volume = audioReference[audioName].volume;
+        activateAudioSource.clip = audioReference[audioName].clip;
+        activateAudioSource.Play();
+
         return 0;
+    }
+
+    public int FindFreeSource()
+    {
+        for (int i = 0; i < sourceCache.Count; i++)
+        {
+            if (!sourceCache[i].isPlaying)
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 }
