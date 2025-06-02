@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class SnowComponent : MonoBehaviour
 {
@@ -8,23 +10,24 @@ public class SnowComponent : MonoBehaviour
 
     [Header("SnowVFXDefault")]
     [SerializeField] private float defaultEmmision;
-    [SerializeField] private float[] defaultVel;
+    [SerializeField] private Vector2 defaultSpeed;
     [SerializeField] private Vector2 defaultDirection;
 
 
 
     void Awake()
     {
-        defaultVel = new float[2];
-
-        defaultEmmision = snowVFX[0].emission.rateOverTime.constant;
-        defaultVel[0] = snowVFX[0].main.startSpeed.constantMin; defaultVel[1] = snowVFX[0].main.startSpeed.constantMax;
+        defaultEmmision = snowVFX[0].GetEmission();
+        defaultSpeed = snowVFX[0].GetStartSpeed();
+        defaultDirection = snowVFX[0].GetDirection();
     }
 
 
 
-    void Start()
+    public void SetStormStrength(float stormStrength)
     {
-        
+        snowVFX[0].SetEmission(defaultEmmision + Mathf.Abs(defaultEmmision * stormStrength/4)); snowVFX[1].SetEmission(defaultEmmision + Mathf.Abs(defaultEmmision * stormStrength/4));
+        snowVFX[0].SetStartSpeed(defaultSpeed * (stormStrength)); snowVFX[1].SetStartSpeed(defaultSpeed * (stormStrength));
+        snowVFX[0].SetDirection(defaultDirection * (stormStrength)); snowVFX[1].SetDirection(defaultDirection * (stormStrength));
     }
 }
