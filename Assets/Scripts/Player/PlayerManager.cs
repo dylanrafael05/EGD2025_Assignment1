@@ -3,12 +3,21 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
+    public enum PlayerState
+    {
+        Idle = 0,
+        Walking = 1,
+        Running = 2
+    }
+
     [NonSerialized] public static PlayerManager instance;
+    [SerializeField] public PlayerState currentState = PlayerState.Idle;
     [NonSerialized] public Vector3 position;
     [NonSerialized] public float rotation;
 
-    [NonSerialized] private PlayerMovementComponent movementComponent;
-    [NonSerialized] private CameraComponent cameraComponent;
+    [NonSerialized] private MovementComponent movementComponent;
+    [NonSerialized] private PlayerCameraComponent cameraComponent;
+    [NonSerialized] private PlayerAudioComponent audioComponent;
 
 
 
@@ -21,8 +30,9 @@ public class PlayerManager : MonoBehaviour
         }
         instance = this;
 
-        movementComponent = GetComponent<PlayerMovementComponent>();
-        cameraComponent = GetComponent<CameraComponent>();
+        movementComponent = GetComponent<MovementComponent>();
+        cameraComponent = GetComponent<PlayerCameraComponent>();
+        audioComponent = GetComponent<PlayerAudioComponent>();
     }
 
 
@@ -30,6 +40,7 @@ public class PlayerManager : MonoBehaviour
     void Update()
     {
         rotation = cameraComponent.GenericPerspective(InputManager.instance.cameraFloat);
-        movementComponent.GenericMove(InputManager.instance.moveVector, rotation);
+        currentState = (PlayerState)movementComponent.GenericMove(InputManager.instance.moveVector, rotation);
+        audioComponent.UpdateGeneric((int)currentState);
     }
 }

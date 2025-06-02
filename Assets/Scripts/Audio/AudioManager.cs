@@ -7,13 +7,13 @@ public class AudioManager : MonoBehaviour
     [NonSerialized] public static AudioManager instance;
 
     [Header("Audio System")]
-    [SerializeField] int sourceCount = 1;
+    [SerializeField] private int sourceCount = 1;
 
 
     [Header("Audio Reference")]
-    [SerializeField] public List<AudioSource> sourceCache;
-    [SerializeField] List<Audio> initiationReference;
-    [NonSerialized] public Dictionary<string, Audio> audioReference;
+    [SerializeField] private List<AudioSource> sourceCache;
+    [SerializeField] private List<Audio> initiationReference;
+    [NonSerialized] private Dictionary<string, Audio> audioReference;
 
 
 
@@ -44,6 +44,17 @@ public class AudioManager : MonoBehaviour
     }
 
 
+    private int FindFreeSource()
+    {
+        for (int i = 0; i < sourceCache.Count; i++)
+        {
+            if (!sourceCache[i].isPlaying)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     public int PlayGeneric(String audioName)
     {
@@ -60,6 +71,7 @@ public class AudioManager : MonoBehaviour
         }
 
         AudioSource activateAudioSource = sourceCache[ad];
+        activateAudioSource.loop = false;
         activateAudioSource.volume = audioReference[audioName].volume;
         activateAudioSource.clip = audioReference[audioName].clip;
         activateAudioSource.Play();
@@ -67,15 +79,26 @@ public class AudioManager : MonoBehaviour
         return ad;
     }
 
-    public int FindFreeSource()
+    public int PlayLoop(String audioName)
     {
-        for (int i = 0; i < sourceCache.Count; i++)
+        int ad = PlayGeneric(audioName);
+        
+        if (ad == -1)
         {
-            if (!sourceCache[i].isPlaying)
-            {
-                return i;
-            }
+            return -1;
         }
-        return -1;
+
+        sourceCache[ad].loop = true;
+        return ad;
     }
+
+    public int StopGeneric(int ad)
+    {
+        if (!sourceCache[ad].isPlaying)
+        {
+            return -1;
+        }
+        sourceCache[ad].Stop();
+        return -1;
+    }    
 }

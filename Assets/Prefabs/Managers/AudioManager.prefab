@@ -52,6 +52,9 @@ MonoBehaviour:
   - name: Test
     clip: {fileID: 8300000, guid: 822b66351500762429091f1a3dc6b3d8, type: 3}
     volume: 1
+  - name: Walking
+    clip: {fileID: 8300000, guid: 130a6107dd846e248a253ce0a1faa722, type: 3}
+    volume: 0.5
 --- !u!1 &7559036048889330466
 GameObject:
   m_ObjectHideFlags: 0

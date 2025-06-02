@@ -1,11 +1,12 @@
+using System;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerMovementComponent : MonoBehaviour
+public class MovementComponent : MonoBehaviour
 {
-    [SerializeField] private float playerSpeed = 1;
-    private Rigidbody rb;
+    [SerializeField] private float moveSpeed = 1000;
+    [NonSerialized] private Rigidbody rb;
 
 
 
@@ -16,19 +17,19 @@ public class PlayerMovementComponent : MonoBehaviour
 
 
 
-    public bool GenericMove(Vector2 moveVector, float rotation)
+    public int GenericMove(Vector2 moveVector, float rotation)
     {
-        float3 tempVector = new float3(moveVector.x * playerSpeed * Time.deltaTime,
+        float3 tempVector = new float3(moveVector.x * moveSpeed * Time.deltaTime,
                                         rb.linearVelocity.y,
-                                        moveVector.y * playerSpeed * Time.deltaTime);
+                                        moveVector.y * moveSpeed * Time.deltaTime);
         rb.linearVelocity = Quaternion.Euler(0, rotation, 0) * tempVector;;
         
         //SnapToGround();
         if (moveVector.x == 0 && moveVector.y == 0)
         {
-            return false;
+            return 0;
         }
-        return true;
+        return 1;
     }
 
     private float SnapToGround()

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class CameraComponent : MonoBehaviour
+public class PlayerCameraComponent : MonoBehaviour
 {
     [SerializeField] private GameObject cameraSocket;
     [SerializeField] private Camera cameraComponent;
