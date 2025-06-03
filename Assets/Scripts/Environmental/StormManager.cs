@@ -19,13 +19,13 @@ public class StormManager : MonoBehaviour
         switch (stormType)
         {
             case 0:
-                snowComponent.SetStormStrength(0);
+                snowComponent.ClearStorm();
                 break;
             case 1:
 
                 break;
             case 2:
-
+                
                 break;
             case 3:
                 snowComponent.SetStormStrength(stormStrength);

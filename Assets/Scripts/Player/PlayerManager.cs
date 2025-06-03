@@ -13,11 +13,14 @@ public class PlayerManager : MonoBehaviour
     [NonSerialized] public static PlayerManager instance;
     [SerializeField] public PlayerState currentState = PlayerState.Idle;
     [NonSerialized] public Vector3 position;
-    [NonSerialized] public float rotation;
+    [SerializeField] public float rotation;
 
     [NonSerialized] private MovementComponent movementComponent;
     [NonSerialized] private PlayerCameraComponent cameraComponent;
     [NonSerialized] private PlayerAudioComponent audioComponent;
+    [NonSerialized] private PlayerAnimationComponent playerAnimationComponent;
+    [NonSerialized] private PlayerInteractionComponent playerInteractionComponent;
+    [NonSerialized] private PlayerInventoryComponent playerInventoryComponent;
 
 
 
@@ -41,6 +44,6 @@ public class PlayerManager : MonoBehaviour
     {
         rotation = cameraComponent.GenericPerspective(InputManager.instance.cameraFloat);
         currentState = (PlayerState)movementComponent.GenericMove(InputManager.instance.moveVector, rotation);
-        audioComponent.UpdateGeneric((int)currentState);
+        audioComponent.GenericUpdate((int)currentState);
     }
 }

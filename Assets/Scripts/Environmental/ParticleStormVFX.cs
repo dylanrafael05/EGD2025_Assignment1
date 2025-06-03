@@ -13,6 +13,17 @@ public static class ParticleStormVFX
         emmision.rateOverTime = rateOverTime;
     }
 
+    public static Vector2 GetStartLifeTime(this ParticleSystem stormVFX)
+    {
+        return new Vector2(stormVFX.main.startLifetime.constantMin, stormVFX.main.startLifetime.constantMax);
+    }
+
+    public static void SetStartLifeTime(this ParticleSystem stormVFX, Vector2 startLifeTime)
+    {
+        ParticleSystem.MainModule main = stormVFX.main;
+        main.startLifetime = new ParticleSystem.MinMaxCurve(startLifeTime.x, startLifeTime.y);
+    }
+
     public static Vector2 GetStartSpeed(this ParticleSystem stormVFX)
     {
         return new Vector2(stormVFX.main.startSpeed.constantMin, stormVFX.main.startSpeed.constantMax);

@@ -5191,6 +5191,7 @@ MonoBehaviour:
   - {fileID: 1301951317}
   - {fileID: 1974215531}
   defaultEmmision: 0
+  defaultStartLifeTime: {x: 0, y: 0}
   defaultSpeed: {x: 0, y: 0}
   defaultDirection: {x: 0, y: 0}
 --- !u!1 &1701360024
@@ -10234,8 +10235,7 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 5321790280631752748, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
