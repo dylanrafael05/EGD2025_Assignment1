@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -29,10 +30,18 @@ public class CachedPerlinNoise : ChunkCachers.IChunkCacher
             || instance.octaveScale != scale
             || instance.octaveAmplitude != amplitude)
             {
-                if(instance != null)
-                    ChunkCachers.Unregister(instance);
+                lock (this)
+                {
+                    if (instance != null
+                    && instance.octaveScale == scale
+                    && instance.octaveAmplitude == amplitude)
+                        return instance;
 
-                instance = CachedPerlinNoise.OfScale(scale, amplitude);
+                    if (instance != null)
+                        ChunkCachers.Unregister(instance);
+
+                    instance = CachedPerlinNoise.OfScale(scale, amplitude);
+                }
             }
 
             return instance;
@@ -116,7 +125,7 @@ public class CachedPerlinNoise : ChunkCachers.IChunkCacher
     // Fields //
     private readonly float octaveScale;
     private readonly float octaveAmplitude;
-    private readonly CachedValueStore<ChunkID, float2, float2> cached = new(
+    private readonly CachedValueStore<ChunkID, int2, float2> cached = new(
         _ => ThreadSafeRandom.Get().NextFloat2Direction());
 
     /// <summary>
@@ -136,23 +145,16 @@ public class CachedPerlinNoise : ChunkCachers.IChunkCacher
         // Multiply our position by our octave scale to facilitate //
         // easier manipulation of fractal noise                    //
         position *= octaveScale;
-        // position.x *= 100;
 
-        //! SAFETY !//
-        // Since .Corners uses floor and addition to calculate corners
-        // based on the position provided, results *should* be deterministic
-        // for not only identical positions, but also for *similar* positions
-        // (unless an integer boundary is crossed, but the perlin noise algorithm
-        // already handles this elegantly so this is of no concern).
         var corners = MathUtils.Corners(position);
         var grads = math.float2x4(
-            cached.Get(chunk, corners[0]),
-            cached.Get(chunk, corners[1]),
-            cached.Get(chunk, corners[2]),
-            cached.Get(chunk, corners[3])
+            cached.Get(chunk, (int2)corners[0]),
+            cached.Get(chunk, (int2)corners[1]),
+            cached.Get(chunk, (int2)corners[2]),
+            cached.Get(chunk, (int2)corners[3])
         );
 
         // Finally, use our gradients to calculate the perlin noise results //
-        return MathUtils.PerlinNoiseFromGrads(math.frac(position), grads);
+        return MathUtils.PerlinNoiseFromGrads(math.frac(position), grads) * octaveAmplitude;
     }
 }

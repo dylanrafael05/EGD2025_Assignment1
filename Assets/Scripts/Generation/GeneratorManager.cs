@@ -33,6 +33,8 @@ public class GeneratorManager : MonoBehaviour
     [SerializeField] private float groundColorMaxHeight;
     [SerializeField] private Color pathColor;
     [SerializeField] private Gradient groundColor;
+    [SerializeField] private float forestAffectGridSize = 3f;
+    [SerializeField] private float forestDecayOnKill = 0.5f;
     [SerializeField] private float pathSearchRadius = 0.05f;
     [SerializeField] private float pathIndent = 0.1f;
     [SerializeField] private float pathSubEffect = 0.1f;
@@ -42,6 +44,7 @@ public class GeneratorManager : MonoBehaviour
 
     private readonly HashSet<int2> generatingChunks = new();
     private readonly Dictionary<int2, ChunkInstance> loadedChunks = new();
+    private CachedWeightMap forestDampenWeight;
 
     public float UnitSideLength => gridSideLength / gridCount;
     public int GenerationRadiusInChunks => Mathf.CeilToInt(generationRadius / gridSideLength);
@@ -52,9 +55,19 @@ public class GeneratorManager : MonoBehaviour
     public ChunkInstance WorldToChunkInstance(float2 position)
         => loadedChunks.GetValueOrDefault(WorldToChunkPosition(position), null);
 
+    public void KillForestAt(float2 pos)
+        => Debug.Assert(forestDampenWeight.UpdateNearestIfExists(
+            pos,
+            (x, y) => Mathf.Clamp01(x * y),
+            forestDecayOnKill));
+
+    public float CalcForestDampen(ChunkID id, float2 pos)
+        => forestDampenWeight.Get(id, pos);
+
     public float CalcForestChance(ChunkID id, float2 pos)
         => forestNoise.Get(id, pos, true)
-         * math.pow(1 - CalcTerrainHeight(id, pos, normalize: true), 0.5f);
+         * math.pow(1 - CalcTerrainHeight(id, pos, normalize: true), 0.5f)
+         * forestDampenWeight.Get(id, pos);
 
     public float CalcPathHeightmapAtLocation(ChunkID id, float2 pos)
         => math.lerp(
@@ -207,6 +220,9 @@ public class GeneratorManager : MonoBehaviour
 
         // Setup the pool for the chunks //
         chunkPool = InstancePool.OfPrefab(chunkPrefab, transform);
+
+        forestDampenWeight = new(forestAffectGridSize, 1);
+        ChunkCachers.Unregister(forestDampenWeight);
     }
 
     bool ChunkShouldCull(int2 chunk, int2 center)

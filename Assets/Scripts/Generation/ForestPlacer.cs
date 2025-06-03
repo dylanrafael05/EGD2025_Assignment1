@@ -1,3 +1,4 @@
+using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -15,14 +16,14 @@ public class ForestPlacer : ScenePropPlacer
         foreach (var offset in Griderable.For(sampleCount))
         {
             var pos = chunk.Bounds.min.tofloat2() + (math.float2(offset) + 0.5f) * sampleStep;
+            var nudge = UnityEngine.Random.insideUnitCircle * sampleStep / 2;
 
+            pos += (float2)nudge;
             var density = GeneratorManager.Instance.CalcForestChance(chunk.ID, pos);
 
             if (UnityEngine.Random.value < math.pow(density, chancePower) * maxChance)
             {
-                var nudge = UnityEngine.Random.insideUnitCircle * sampleStep / 2;
-
-                AttemptCreate(chunk, pos + (float2)nudge);
+                AttemptCreate(chunk, pos);
             }
         }
     }

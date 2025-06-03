@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -64,6 +64,14 @@ public class ChunkInstance : PoolableBehaviour
 
         GroundMesher ??= new(GeneratorManager.Instance.gridCount, GeneratorManager.Instance.UnitSideLength);
         PathMesher ??= new(GeneratorManager.Instance.gridCount, GeneratorManager.Instance.UnitSideLength);
+
+        /*//
+            DebugLabels.Attach(
+                gameObject,
+                Vector3.up * 5,
+                () => GeneratorManager.Instance.CalcForestDampen(ID, transform.position.tofloat3().xz)
+            );
+        //*/
     }
 
     public void UpdateMeshInfo()
