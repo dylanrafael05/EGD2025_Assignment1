@@ -36,6 +36,9 @@ public class PlayerManager : MonoBehaviour
         movementComponent = GetComponent<MovementComponent>();
         cameraComponent = GetComponent<PlayerCameraComponent>();
         audioComponent = GetComponent<PlayerAudioComponent>();
+        playerAnimationComponent = GetComponent<PlayerAnimationComponent>();
+        playerInteractionComponent = GetComponent<PlayerInteractionComponent>();
+        playerInventoryComponent = GetComponent<PlayerInventoryComponent>();
     }
 
 
@@ -45,5 +48,6 @@ public class PlayerManager : MonoBehaviour
         rotation = cameraComponent.GenericPerspective(InputManager.instance.cameraFloat);
         currentState = (PlayerState)movementComponent.GenericMove(InputManager.instance.moveVector, rotation);
         audioComponent.GenericUpdate((int)currentState);
+        playerAnimationComponent.GenericUpdate((int)currentState, InputManager.instance.moveVector, rotation);
     }
 }
