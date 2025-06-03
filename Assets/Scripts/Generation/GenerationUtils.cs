@@ -4,8 +4,6 @@ using UnityEngine;
 
 public static class GenerationUtils
 {
-    public static PersistentPerlinNoise Noise { get; } = new();
-
     public const float DEFAULT_HEIGHT = -1;
 
     private static bool HasWarnedForInvalidGroundHeight = false;

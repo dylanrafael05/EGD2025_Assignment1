@@ -21,12 +21,13 @@ public class GeneratorManager : MonoBehaviour
     public float gridSideLength;
 
     [Header("Generation Settings")]
-    [SerializeField] private OctaveInformation[] heightOctaves;
-    [SerializeField] private OctaveInformation[] forestOctaves;
-    [SerializeField] private OctaveInformation[] pathFirstOctaves;
-    [SerializeField] private OctaveInformation[] pathSecondOctaves;
-    [SerializeField] private OctaveInformation[] pathMixOctaves;
-    [SerializeField] private OctaveInformation[] pathSubOctaves;
+    [SerializeField] private CachedPerlinNoise.Fractal heightNoise;
+    [SerializeField] private CachedPerlinNoise.Fractal forestNoise;
+    [SerializeField] private CachedPerlinNoise.Fractal pathFirstNoise;
+    [SerializeField] private CachedPerlinNoise.Fractal pathSecondNoise;
+    [SerializeField] private CachedPerlinNoise.Fractal pathMixNoise;
+    [SerializeField] private CachedPerlinNoise.Fractal pathSubtractNoise;
+
     [SerializeField] private ScenePropPlacer[] propPlacers;
     [SerializeField] private float groundColorMinHeight;
     [SerializeField] private float groundColorMaxHeight;
@@ -52,15 +53,15 @@ public class GeneratorManager : MonoBehaviour
         => loadedChunks.GetValueOrDefault(WorldToChunkPosition(position), null);
 
     public float CalcForestChance(ChunkID id, float2 pos)
-        => GenerationUtils.Noise.Get(id, pos, true, octaves: forestOctaves)
+        => forestNoise.Get(id, pos, true)
          * math.pow(1 - CalcTerrainHeight(id, pos, normalize: true), 0.5f);
 
     public float CalcPathHeightmapAtLocation(ChunkID id, float2 pos)
         => math.lerp(
-            GenerationUtils.Noise.Get(id, pos, true, octaves: pathFirstOctaves) * 2 - 1,
-            GenerationUtils.Noise.Get(id, pos, true, octaves: pathSecondOctaves) * 2 - 1,
-            GenerationUtils.Noise.Get(id, pos, true, octaves: pathMixOctaves)
-        ) - GenerationUtils.Noise.Get(id, pos, true, octaves: pathSubOctaves) * pathSubEffect;
+            pathFirstNoise.Get(id, pos, true) * 2 - 1,
+            pathSecondNoise.Get(id, pos, true) * 2 - 1,
+            pathMixNoise.Get(id, pos, true)
+        ) - pathSubtractNoise.Get(id, pos, true) * pathSubEffect;
 
     public bool CalcIsPath(ChunkID id, float2 pos)
     {
@@ -89,7 +90,7 @@ public class GeneratorManager : MonoBehaviour
     }
 
     public float CalcTerrainHeight(ChunkID id, float2 pos, bool normalize = false)
-        => GenerationUtils.Noise.Get(id, pos, normalize, octaves: heightOctaves);
+        => heightNoise.Get(id, pos, normalize);
 
     private void GenerateHeight(ChunkInstance chunk)
     {
@@ -232,7 +233,7 @@ public class GeneratorManager : MonoBehaviour
             foreach (var chunk in chunksToUnload)
             {
                 loadedChunks.Remove(chunk, out var instance);
-                GenerationUtils.Noise.UnloadChunk(instance.ID);
+                ChunkCachers.UnloadChunk(instance.ID);
                 chunkPool.Release(instance);
             }
 
