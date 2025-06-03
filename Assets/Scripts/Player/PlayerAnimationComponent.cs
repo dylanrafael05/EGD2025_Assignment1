@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerAnimationComponent : MonoBehaviour
 {
-    Animator animator;
+    [SerializeField] Animator animator;
     Vector2 currentDirection;
     float lastRotation;
 
