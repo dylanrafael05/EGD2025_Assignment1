@@ -8,7 +8,7 @@ public class PlayerAudioComponent : MonoBehaviour
 
 
 
-    public void UpdateGeneric(int state)
+    public void GenericUpdate(int state)
     {
         switch (state)
         {
