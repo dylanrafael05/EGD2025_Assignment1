@@ -103,7 +103,7 @@ public class CachedValueStore<ID, K, V>
     /// <summary>
     /// Get the value (and update the id set) from a pre-existing value.
     /// </summary>
-    private V GetFromExisting(ID id, K key, ValueStorage value)
+    private void UpdateExisting(ID id, K key, ValueStorage value)
     {
         var used = GetUsedValues(id);
 
@@ -114,20 +114,16 @@ public class CachedValueStore<ID, K, V>
             Interlocked.Increment(ref value.useCount);
             used.Add(key);
         }
-
-        return value.value;
     }
 
-    /// <summary>
-    /// Get or generate the value associated with the provided identifier and key.
-    /// </summary>
-    public V Get(ID id, K key)
+    private ValueStorage GetOrCreateStorage(ID id, K key)
     {
         // If the value storage already exists, use it directly //
-        ValueStorage value;
-
-        if (values.TryGetValue(key, out value))
-            return GetFromExisting(id, key, value);
+        if (values.TryGetValue(key, out var value))
+        {
+            UpdateExisting(id, key, value);
+            return value;
+        }
 
         // Otherwise, wait for the mutex to try and create it //
         if (!generateMut.WaitOne())
@@ -140,7 +136,9 @@ public class CachedValueStore<ID, K, V>
         if (values.TryGetValue(key, out value))
         {
             generateMut.ReleaseMutex();
-            return GetFromExisting(id, key, value);
+
+            UpdateExisting(id, key, value);
+            return value;
         }
 
         // Otherwise, generate a new storage instance //
@@ -155,6 +153,50 @@ public class CachedValueStore<ID, K, V>
 
         // Release the mutex //
         generateMut.ReleaseMutex();
+        return value;
+    }
+
+    /// <summary>
+    /// Get or generate the value associated with the provided identifier and key.
+    /// </summary>
+    public V Get(ID id, K key)
+    {
+        var value = GetOrCreateStorage(id, key);
         return value.value;
     }
+
+    /// <summary>
+    /// Update the value associated with the provided key, if it exists.
+    /// </summary>
+    public bool UpdateIfExists(K key, Func<V, V> updator)
+    {
+        if (values.TryGetValue(key, out var value))
+        {
+            value.value = updator(value.value);
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Update the value associated with the provided key, if it exists,
+    /// currying the provided extra argument into the function call to 
+    /// prevent an allocation.
+    /// </summary>
+    public bool UpdateIfExists<T>(K key, Func<V, T, V> updator, T genarg)
+    {
+        if (values.TryGetValue(key, out var value))
+        {
+            value.value = updator(value.value, genarg);
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Get a collection of the keys in this value store.
+    /// </summary>
+    public ICollection<K> Keys => values.Keys;
 }
