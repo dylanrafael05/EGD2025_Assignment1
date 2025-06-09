@@ -42,6 +42,9 @@ public class EnvironmentalManager : MonoBehaviour
 
     void Update()
     {
+        stormStrength = GeneratorManager.Instance.GetSnowDensity(transform.position.tofloat3().xz);
+        fogStrength = GeneratorManager.Instance.GetFogDensity(transform.position.tofloat3().xz);
+
         stormManager.UpdateStorm((int)currentType, stormStrength);
         fogManager.UpdateFog(fogStrength);
         transform.position = PlayerManager.instance.transform.position;
