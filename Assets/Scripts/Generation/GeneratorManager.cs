@@ -26,7 +26,7 @@ public class GeneratorManager : MonoBehaviour
     [SerializeField] private float fogNoiseScale;
     [SerializeField] private float snowNoiseScale;
 
-    [Header("Generation Settings")]
+    [Header("Generation Settings -- Noise")]
     [SerializeField] private CachedPerlinNoise.Fractal heightNoise;
     [SerializeField] private CachedPerlinNoise.Fractal forestNoise;
     [SerializeField] private CachedPerlinNoise.Fractal pathFirstNoise;
@@ -34,19 +34,35 @@ public class GeneratorManager : MonoBehaviour
     [SerializeField] private CachedPerlinNoise.Fractal pathMixNoise;
     [SerializeField] private CachedPerlinNoise.Fractal pathSubtractNoise;
 
+    [Header("Generation Settings -- Props")]
     [SerializeField] private ScenePropPlacer[] propPlacers;
+    
+    [Header("Generation Settings -- Start Area")]
     [SerializeField] private float startAreaInnerRadius;
     [SerializeField] private float startAreaOuterRadius;
+    
+    [Header("Generation Settings -- Void")]
     [SerializeField] private float voidRadius;
+    [SerializeField] private float voidFalloff;
+    [SerializeField] private float voidColorBeginHeight;
+    [SerializeField] private float voidColorFullHeight;
+    [SerializeField] private Color voidColor;
+    
+    [Header("Generation Settings -- Coloration")]
     [SerializeField] private float groundColorMinHeight;
     [SerializeField] private float groundColorMaxHeight;
     [SerializeField] private Color pathColor;
     [SerializeField] private Gradient groundColor;
+    
+    [Header("Generation Settings -- Forest")]
     [SerializeField] private float forestAffectGridSize = 3f;
     [SerializeField] private float forestDecayOnKill = 0.5f;
+    
+    [Header("Generation Settings -- Path")]
     [SerializeField] private float pathSearchRadius = 0.05f;
     [SerializeField] private float pathIndent = 0.1f;
     [SerializeField] private float pathSubEffect = 0.1f;
+    [SerializeField] private float pathRadiusFromVoid = 3f;
 
     // Implementation variables //
     private InstancePool<ChunkInstance> chunkPool;
@@ -104,11 +120,14 @@ public class GeneratorManager : MonoBehaviour
 
     public float CalcForestChance(ChunkID id, float2 pos)
     {
+        if (CalcDistanceIntoVoid(pos) > 0)
+            return 0;
+
         var result = forestNoise.Get(id, pos, true)
                    * math.pow(1 - CalcTerrainHeight(id, pos, normalize: true), 0.5f)
                    * forestDampenWeight.Get(id, pos);
 
-        return result * (1 - CalcStartAreaAffect(pos)) * (1 - 1_000_000_000_000f * CalcVoidAffect(pos));
+        return result * (1 - CalcCampfireOverrideFactor(pos));
     }
 
     public float CalcPathHeightmapAtLocation(ChunkID id, float2 pos)
@@ -119,9 +138,10 @@ public class GeneratorManager : MonoBehaviour
             pathMixNoise.Get(id, pos, true)
         ) - pathSubtractNoise.Get(id, pos, true) * pathSubEffect;
 
-        var start = CalcStartAreaAffect(pos);
+        var start = CalcCampfireOverrideFactor(pos);
 
         result = math.lerp(result, start - 0.5f, start*start);
+        result += math.pow(CalcDistanceIntoVoid(pos, -pathRadiusFromVoid), 3);
 
         return result;
     }
@@ -152,7 +172,7 @@ public class GeneratorManager : MonoBehaviour
         return false;
     }
 
-    public float CalcStartAreaAffect(float2 pos)
+    public float CalcCampfireOverrideFactor(float2 pos)
     {
         if (math.lengthsq(pos) <= startAreaOuterRadius * startAreaOuterRadius)
         {
@@ -165,26 +185,32 @@ public class GeneratorManager : MonoBehaviour
         return 0;
     }
 
-    public float CalcVoidAffect(float2 pos)
+    public float CalcDistanceIntoVoid(float2 pos, float radiusOffset = 0)
     {
-        if (math.lengthsq(pos) >= voidRadius * voidRadius)
+        var radius = voidRadius + radiusOffset;
+
+        if (math.lengthsq(pos) >= radius * radius)
         {
-            return math.length(pos) - voidRadius;
+            return math.length(pos) - radius;
         }
 
         return 0;
     }
 
+    public float CalcVoidHeightOffset(ChunkID id, float2 pos)
+        => -math.pow(
+            CalcDistanceIntoVoid(pos, -voidFalloff / 2) / voidFalloff, 3);
+
     public float CalcTerrainHeight(ChunkID id, float2 pos, bool normalize = false)
         => math.lerp(
             heightNoise.Get(id, pos, normalize),
             heightNoise.TotalAmplitude / 2,
-            CalcStartAreaAffect(pos)
-        ) - math.pow(CalcVoidAffect(pos), 3);
+            CalcCampfireOverrideFactor(pos)
+        );
 
-    private void GenerateHeight(ChunkInstance chunk)
+    private void GenerateShape(ChunkInstance chunk)
     {
-        using var marker = ProfilerUtil.Enter("Generation.GenerateChunk.Height");
+        using var marker = ProfilerUtil.Enter("Generation.GenerateChunk.Shape");
 
         foreach (var pos in Griderable.ForInclusive(gridCount))
         {
@@ -194,10 +220,17 @@ public class GeneratorManager : MonoBehaviour
             var vpos = vertex.tofloat3().xz;
             vpos += (float2)chunk.Position * gridSideLength;
 
-            vertex.y = CalcTerrainHeight(chunk.ID, vpos);
+            var voidOffset = CalcVoidHeightOffset(chunk.ID, vpos);
+
+            vertex.y = CalcTerrainHeight(chunk.ID, vpos) + voidOffset;
 
             // Populate vertex colors based on vertex height //
-            chunk.GroundMesher.Colors[pos] = groundColor.Evaluate(Mathf.InverseLerp(groundColorMinHeight, groundColorMaxHeight, vertex.y));
+            chunk.GroundMesher.Colors[pos] = Color.Lerp(
+                groundColor.Evaluate(Mathf.InverseLerp(groundColorMinHeight, groundColorMaxHeight, vertex.y)),
+                voidColor,
+                1 - Mathf.Clamp01(
+                    Mathf.InverseLerp(voidColorFullHeight, voidColorBeginHeight, voidOffset))
+            );
         }
     }
 
@@ -256,7 +289,7 @@ public class GeneratorManager : MonoBehaviour
             chunk.NeedsInitialization = false;
         }
 
-        GenerateHeight(chunk);
+        GenerateShape(chunk);
         GeneratePaths(chunk);
 
         await UniTask.SwitchToMainThread();
