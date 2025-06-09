@@ -68,8 +68,26 @@ public class CachedPerlinNoise : ChunkCachers.IChunkCacher
     public class Fractal
     {
         [SerializeField] private List<Octave> octaves;
+        private float totalAmplitude = float.NaN;
 
         public IReadOnlyList<Octave> Octaves => octaves;
+        public float TotalAmplitude
+        {
+            get
+            {
+                if (float.IsNaN(totalAmplitude))
+                {
+                    totalAmplitude = 0;
+                    foreach (var octave in octaves)
+                    {
+                        totalAmplitude += octave.Amplitude;
+                    }
+                }
+
+                return totalAmplitude;
+            }
+        }
+        
 
         /// <summary>
         /// Sample this fractal noise instance.

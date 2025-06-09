@@ -20,6 +20,11 @@ public class GeneratorManager : MonoBehaviour
     public int gridCount;
     public float gridSideLength;
 
+    [Header("Weather Patterns")]
+    [SerializeField] private float weatherShiftSpeed;
+    [SerializeField] private float fogNoiseScale;
+    [SerializeField] private float snowNoiseScale;
+
     [Header("Generation Settings")]
     [SerializeField] private CachedPerlinNoise.Fractal heightNoise;
     [SerializeField] private CachedPerlinNoise.Fractal forestNoise;
@@ -29,6 +34,8 @@ public class GeneratorManager : MonoBehaviour
     [SerializeField] private CachedPerlinNoise.Fractal pathSubtractNoise;
 
     [SerializeField] private ScenePropPlacer[] propPlacers;
+    [SerializeField] private float startAreaInnerRadius;
+    [SerializeField] private float startAreaOuterRadius;
     [SerializeField] private float groundColorMinHeight;
     [SerializeField] private float groundColorMaxHeight;
     [SerializeField] private Color pathColor;
@@ -54,27 +61,57 @@ public class GeneratorManager : MonoBehaviour
 
     public ChunkInstance WorldToChunkInstance(float2 position)
         => loadedChunks.GetValueOrDefault(WorldToChunkPosition(position), null);
-
+    
     public void KillForestAt(float2 pos)
         => Debug.Assert(forestDampenWeight.UpdateNearestIfExists(
             pos,
             (x, y) => Mathf.Clamp01(x * y),
             forestDecayOnKill));
 
+    public float GetFogDensity(float2 pos)
+    {
+        pos *= fogNoiseScale;
+        pos += 100;
+        pos += Time.deltaTime * weatherShiftSpeed;
+
+        return Mathf.PerlinNoise(pos.x, pos.y) * 100;
+    }
+
+    public float GetSnowDensity(float2 pos)
+    {
+        pos *= snowNoiseScale;
+        pos -= 100;
+        pos += Time.deltaTime * weatherShiftSpeed;
+
+        return Mathf.PerlinNoise(pos.x, pos.y) * 10;
+    }
+
     public float CalcForestDampen(ChunkID id, float2 pos)
         => forestDampenWeight.Get(id, pos);
 
     public float CalcForestChance(ChunkID id, float2 pos)
-        => forestNoise.Get(id, pos, true)
-         * math.pow(1 - CalcTerrainHeight(id, pos, normalize: true), 0.5f)
-         * forestDampenWeight.Get(id, pos);
+    {
+        var result = forestNoise.Get(id, pos, true)
+                   * math.pow(1 - CalcTerrainHeight(id, pos, normalize: true), 0.5f)
+                   * forestDampenWeight.Get(id, pos);
+
+        return result * (1 - CalcStartAreaAffect(pos));
+    }
 
     public float CalcPathHeightmapAtLocation(ChunkID id, float2 pos)
-        => math.lerp(
+    {
+        var result = math.lerp(
             pathFirstNoise.Get(id, pos, true) * 2 - 1,
             pathSecondNoise.Get(id, pos, true) * 2 - 1,
             pathMixNoise.Get(id, pos, true)
         ) - pathSubtractNoise.Get(id, pos, true) * pathSubEffect;
+
+        var start = CalcStartAreaAffect(pos);
+
+        result = math.lerp(result, start - 0.5f, start*start);
+
+        return result;
+    }
 
     public bool CalcIsPath(ChunkID id, float2 pos)
     {
@@ -102,8 +139,25 @@ public class GeneratorManager : MonoBehaviour
         return false;
     }
 
+    public float CalcStartAreaAffect(float2 pos)
+    {
+        if (math.lengthsq(pos) <= startAreaOuterRadius * startAreaOuterRadius)
+        {
+            var len = math.length(pos);
+            var lerpToZero = 1 - math.smoothstep(startAreaInnerRadius, startAreaOuterRadius, len);
+
+            return lerpToZero;
+        }
+
+        return 0;
+    }
+
     public float CalcTerrainHeight(ChunkID id, float2 pos, bool normalize = false)
-        => heightNoise.Get(id, pos, normalize);
+        => math.lerp(
+            heightNoise.Get(id, pos, normalize),
+            heightNoise.TotalAmplitude / 2,
+            CalcStartAreaAffect(pos)
+        );
 
     private void GenerateHeight(ChunkInstance chunk)
     {
