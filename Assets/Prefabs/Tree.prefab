@@ -96,9 +96,9 @@ GameObject:
   m_Component:
   - component: {fileID: 825363532856070881}
   - component: {fileID: 8815961755402126326}
-  m_Layer: 2
+  m_Layer: 8
   m_Name: Bounds
-  m_TagString: Untagged
+  m_TagString: Tree
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

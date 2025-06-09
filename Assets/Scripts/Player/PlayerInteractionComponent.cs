@@ -1,16 +1,34 @@
+using System;
 using UnityEngine;
 
 public class PlayerInteractionComponent : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [NonSerialized] private BoxCollider boxCollider;
+
+
+
+    void Awake()
     {
-        
+        boxCollider = GetComponent<BoxCollider>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerStay(Collider other)
     {
-        
+        if (other.gameObject.layer == Layers.InteractableMask)
+        {
+            return;
+        }
+
+        if (other.gameObject.layer == 8)
+        {
+            if (other.CompareTag("Tree") && InputManager.instance.interactBool)
+            {
+                print("hallo");
+            }
+            else if (false)
+            {
+
+            }
+        }
     }
 }
