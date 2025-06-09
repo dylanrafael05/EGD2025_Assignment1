@@ -18,7 +18,7 @@ public class EnvironmentalManager : MonoBehaviour
     
     [Header("Storm System")]
     [SerializeField] public float stormStrength = 1;
-    [SerializeField] public StormType currentType = StormType.Clear;
+    [SerializeField] public StormType currentType = StormType.Snow;
 
 
     [Header("Fog System")]

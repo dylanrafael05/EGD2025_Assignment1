@@ -12,7 +12,6 @@ public class PlayerManager : MonoBehaviour
 
     [NonSerialized] public static PlayerManager instance;
     [SerializeField] public PlayerState currentState = PlayerState.Idle;
-    [NonSerialized] public Vector3 position;
     [SerializeField] public float rotation;
 
     [NonSerialized] private MovementComponent movementComponent;
