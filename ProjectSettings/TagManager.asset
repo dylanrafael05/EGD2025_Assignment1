@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Tree
   - Item
+  - CampFire
   layers:
   - Default
   - TransparentFX
