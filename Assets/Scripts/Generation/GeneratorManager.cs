@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -36,6 +37,7 @@ public class GeneratorManager : MonoBehaviour
     [SerializeField] private ScenePropPlacer[] propPlacers;
     [SerializeField] private float startAreaInnerRadius;
     [SerializeField] private float startAreaOuterRadius;
+    [SerializeField] private float voidRadius;
     [SerializeField] private float groundColorMinHeight;
     [SerializeField] private float groundColorMaxHeight;
     [SerializeField] private Color pathColor;
@@ -55,6 +57,17 @@ public class GeneratorManager : MonoBehaviour
 
     public float UnitSideLength => gridSideLength / gridCount;
     public int GenerationRadiusInChunks => Mathf.CeilToInt(generationRadius / gridSideLength);
+
+
+    public float2 ClampInsideWorld(float2 position)
+    {
+        if (math.lengthsq(position) > voidRadius * voidRadius)
+        {
+            return math.normalize(position) * voidRadius;
+        }
+
+        return position;
+    }
 
     public int2 WorldToChunkPosition(float2 position)
         => (int2)math.floor(position / gridSideLength);
@@ -95,7 +108,7 @@ public class GeneratorManager : MonoBehaviour
                    * math.pow(1 - CalcTerrainHeight(id, pos, normalize: true), 0.5f)
                    * forestDampenWeight.Get(id, pos);
 
-        return result * (1 - CalcStartAreaAffect(pos));
+        return result * (1 - CalcStartAreaAffect(pos)) * (1 - 1_000_000_000_000f * CalcVoidAffect(pos));
     }
 
     public float CalcPathHeightmapAtLocation(ChunkID id, float2 pos)
@@ -152,12 +165,22 @@ public class GeneratorManager : MonoBehaviour
         return 0;
     }
 
+    public float CalcVoidAffect(float2 pos)
+    {
+        if (math.lengthsq(pos) >= voidRadius * voidRadius)
+        {
+            return math.length(pos) - voidRadius;
+        }
+
+        return 0;
+    }
+
     public float CalcTerrainHeight(ChunkID id, float2 pos, bool normalize = false)
         => math.lerp(
             heightNoise.Get(id, pos, normalize),
             heightNoise.TotalAmplitude / 2,
             CalcStartAreaAffect(pos)
-        );
+        ) - math.pow(CalcVoidAffect(pos), 3);
 
     private void GenerateHeight(ChunkInstance chunk)
     {

@@ -16,10 +16,10 @@ RenderSettings:
   serializedVersion: 10
   m_Fog: 1
   m_FogColor: {r: 0.5245282, g: 0.5245282, b: 0.5245282, a: 1}
-  m_FogMode: 3
+  m_FogMode: 1
   m_FogDensity: 0.03
-  m_LinearFogStart: 0
-  m_LinearFogEnd: 45
+  m_LinearFogStart: 10
+  m_LinearFogEnd: 40
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
@@ -568,6 +568,7 @@ MonoBehaviour:
   - {fileID: 1538519190}
   startAreaInnerRadius: 1
   startAreaOuterRadius: 10
+  voidRadius: 40
   groundColorMinHeight: 0
   groundColorMaxHeight: 6
   pathColor: {r: 0.23773581, g: 0.19318196, b: 0.15923813, a: 1}

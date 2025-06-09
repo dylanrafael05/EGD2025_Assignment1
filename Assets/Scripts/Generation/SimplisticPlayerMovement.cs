@@ -57,5 +57,12 @@ public class SimplisticPlayerMovement : MonoBehaviour
         transform.localRotation = Quaternion.Lerp(transform.localRotation, desiredRotation, rotLerpFactor * Time.deltaTime);
 
         transform.position += cspeed * Time.deltaTime * (transform.rotation * Vector3.Normalize(new(dir.x, 0, dir.y)));
+
+        var position = GeneratorManager.Instance.ClampInsideWorld(transform.position.tofloat3().xz);
+        transform.position = new(
+            position.x,
+            transform.position.y,
+            position.y
+        );
     }
 }
