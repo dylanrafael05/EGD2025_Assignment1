@@ -7,7 +7,8 @@ public abstract class ScenePropPlacer : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private SceneProp prefab;
 
-    private readonly Collider[] colliderResults = new Collider[2];
+    // NOTE: this value of 256 is an arbitrary upper bound //
+    private readonly Collider[] colliderResults = new Collider[256];
 
 
     private InstancePool<SceneProp> instancePool;
@@ -49,7 +50,14 @@ public abstract class ScenePropPlacer : MonoBehaviour
                 prop.transform.rotation,
                 ~Layers.GroundMask & ~Layers.IgnoreRaycastMask);
 
-            permit = (count <= 1);
+            for (int i = 0; i < count; i++)
+            {
+                if (!colliderResults[i].IsChildOf(prop.transform))
+                {
+                    permit = false;
+                    break;
+                }
+            }
         }
 
         if (!permit)

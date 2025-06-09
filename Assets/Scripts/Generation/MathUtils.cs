@@ -1,5 +1,4 @@
 using Unity.Mathematics;
-using UnityEngine;
 
 /// <summary>
 /// A helper class containing useful methods for mathematics, built on the
