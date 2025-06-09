@@ -24,7 +24,10 @@ public class MovementComponent : MonoBehaviour
                                         moveVector.y * moveSpeed * Time.deltaTime);
         rb.linearVelocity = Quaternion.Euler(0, rotation, 0) * tempVector;;
         
-        //SnapToGround();
+        var loc = transform.position;
+        loc.y = GenerationUtils.StandHeightAt(loc.asfloat3().xz);
+        transform.position = loc;
+        
         if (moveVector.x == 0 && moveVector.y == 0)
         {
             return 0;

@@ -46,7 +46,7 @@ public class PlayerInteractionComponent : MonoBehaviour
         {
             if (InputManager.instance.interactBool)
             {
-                playerInventoryComponent.BurnInventory();
+                other.GetComponent<CampFireManager>().IncreaseBurn(playerInventoryComponent.BurnInventory());
             }
         }
     }

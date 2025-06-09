@@ -9720,7 +9720,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stormStrength: 1
-  currentType: 0
+  currentType: 3
   fogStrength: 1
 --- !u!114 &2140612812170674992
 MonoBehaviour:
