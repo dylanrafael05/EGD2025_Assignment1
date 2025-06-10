@@ -1,12 +1,23 @@
+using System;
 using UnityEngine;
 
 public class CampFireManager : MonoBehaviour
 {
+    public static CampFireManager instance;
+
+    [NonSerialized] private CampFireVFXComponent campFireVFXComponent;
+    [NonSerialized] private int fireStrength;
 
 
 
-    public void IncreaseBurn(int totalValue)
+    void Awake()
     {
-        print("put in burnvalue = " + totalValue);
+        campFireVFXComponent = GetComponent<CampFireVFXComponent>();
+    }
+
+    public void IncreaseBurn(int incrementValue)
+    {
+        fireStrength += incrementValue;
+        campFireVFXComponent.SetLightIntensity(fireStrength);
     }
 }

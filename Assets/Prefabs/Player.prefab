@@ -74,7 +74,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4404024156187780052}
   - component: {fileID: 6067017180366054482}
-  - component: {fileID: 7304547095778912477}
   - component: {fileID: 3389028544215729542}
   m_Layer: 0
   m_Name: Main Camera
@@ -149,14 +148,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &7304547095778912477
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6566117065673480184}
-  m_Enabled: 1
 --- !u!114 &3389028544215729542
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -222,6 +213,7 @@ GameObject:
   - component: {fileID: 2009858446935801850}
   - component: {fileID: 7245897435831271095}
   - component: {fileID: 366309323332876861}
+  - component: {fileID: 4090549743121208176}
   m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
@@ -464,6 +456,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   totalFireWood: 0
   currentItem: {fileID: 0}
+--- !u!81 &4090549743121208176
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6752310581709941667}
+  m_Enabled: 1
 --- !u!1 &6944484141890823548
 GameObject:
   m_ObjectHideFlags: 0
