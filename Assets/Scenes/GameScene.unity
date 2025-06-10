@@ -508,18 +508,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 3253401246681881022, guid: e8a2266e3f331544892d33847b5b4713, type: 3}
   entries:
+  - specification: {fileID: 11400000, guid: c892573d262a2304bb9343e6be365148, type: 2}
+    minFirewood: 30
   - specification: {fileID: 11400000, guid: a2009c7231278574baffa56bd165365f, type: 2}
     minFirewood: 1
   - specification: {fileID: 11400000, guid: 04f68a9a9069754478c4da3d1ff858f3, type: 2}
     minFirewood: 10
   - specification: {fileID: 11400000, guid: dea6f96a767e6ab42b89ff7cbcc49238, type: 2}
     minFirewood: 20
-  - specification: {fileID: 11400000, guid: c892573d262a2304bb9343e6be365148, type: 2}
-    minFirewood: 30
-  - specification: {fileID: 11400000, guid: 9d66cf7d1aa1c8b4eafbe3e07e5df377, type: 2}
-    minFirewood: 40
   - specification: {fileID: 11400000, guid: 950164c13619b0842933e656a4bf4699, type: 2}
     minFirewood: 50
+  - specification: {fileID: 11400000, guid: 9d66cf7d1aa1c8b4eafbe3e07e5df377, type: 2}
+    minFirewood: 40
   chanceToPlace: 0.2
 --- !u!1 &410087039
 GameObject:
