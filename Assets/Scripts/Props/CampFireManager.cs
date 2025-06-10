@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class CampFireManager : MonoBehaviour
 {
@@ -12,8 +13,20 @@ public class CampFireManager : MonoBehaviour
 
     void Awake()
     {
-        campFireVFXComponent = GetComponent<CampFireVFXComponent>();
+        if (instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
         instance = this;
+        campFireVFXComponent = GetComponent<CampFireVFXComponent>();
+    }
+
+
+
+    void Update()
+    {
+        campFireVFXComponent.SetLightIntensity(fireStrength + Random.Range(-1f,1f));
     }
 
 
@@ -21,6 +34,5 @@ public class CampFireManager : MonoBehaviour
     public void IncreaseBurn(int incrementValue)
     {
         fireStrength += incrementValue;
-        campFireVFXComponent.SetLightIntensity(fireStrength);
     }
 }

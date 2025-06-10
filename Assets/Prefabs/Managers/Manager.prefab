@@ -160,6 +160,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: AudioManager
       objectReference: {fileID: 0}
+    - target: {fileID: 6279119643288725857, guid: 07bb7ae743fbb1b4dac3ae650be120cb, type: 3}
+      propertyPath: reverbZoneMixCustomCurve.m_Curve.Array.data[0].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8245951228468945594, guid: 07bb7ae743fbb1b4dac3ae650be120cb, type: 3}
+      propertyPath: initiationReference.Array.data[1].volume
+      value: 0.2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

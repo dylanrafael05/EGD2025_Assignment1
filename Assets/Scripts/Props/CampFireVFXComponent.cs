@@ -1,8 +1,11 @@
+using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class CampFireVFXComponent : MonoBehaviour
 {
     [SerializeField] private Light pointLight;
+    [NonSerialized] private float flickerValue = 0;
 
 
 
@@ -13,8 +16,9 @@ public class CampFireVFXComponent : MonoBehaviour
 
 
 
-    public void SetLightIntensity(int lightValue)
+    public void SetLightIntensity(float lightValue)
     {
-        pointLight.intensity = lightValue;
+        pointLight.intensity = lightValue + Mathf.Sin(flickerValue) * Random.Range(0.9f, 1.1f);
+        flickerValue += Time.deltaTime*0.01f;
     }
 }
