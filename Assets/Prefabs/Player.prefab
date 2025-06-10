@@ -171,7 +171,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -388,7 +388,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b88a6ed7d96a7a4ab881523bc065c97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 1000
+  moveSpeed: 10
 --- !u!114 &4121133005026500254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -405,6 +405,7 @@ MonoBehaviour:
   cameraComponent: {fileID: 6067017180366054482}
   spriteRenderer: {fileID: 5556045892795772133}
   rotationLerpFactor: 10
+  xAngle: 30
 --- !u!114 &8352297426772574725
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -430,6 +431,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 7568928355042351758}
+  sprite: {fileID: 0}
 --- !u!114 &7245897435831271095
 MonoBehaviour:
   m_ObjectHideFlags: 0

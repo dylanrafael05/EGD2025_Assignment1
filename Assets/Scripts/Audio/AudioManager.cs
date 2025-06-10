@@ -40,8 +40,9 @@ public class AudioManager : MonoBehaviour
     }
     void Start()
     {
-        AudioManager.instance.PlayGeneric("Test");
+        AudioManager.instance.PlayLoop("Test", new Vector3(0,0,0));
     }
+
 
 
     private int FindFreeSource()
@@ -74,6 +75,7 @@ public class AudioManager : MonoBehaviour
         activateAudioSource.loop = false;
         activateAudioSource.volume = audioReference[audioName].volume;
         activateAudioSource.clip = audioReference[audioName].clip;
+        activateAudioSource.spatialBlend = 0;
         activateAudioSource.Play();
 
         return ad;
@@ -89,6 +91,30 @@ public class AudioManager : MonoBehaviour
         }
 
         sourceCache[ad].loop = true;
+        return ad;
+    }
+
+    public int PlayGeneric(String audioName, Vector3 position)
+    {
+        int ad = PlayGeneric(audioName);
+        if (ad == -1)
+        {
+            return -1;
+        }
+        sourceCache[ad].transform.position = position;
+        sourceCache[ad].spatialBlend = 1;
+        return ad;
+    }
+
+    public int PlayLoop(String audioName, Vector3 position)
+    {
+        int ad = PlayLoop(audioName);
+        if (ad == -1)
+        {
+            return -1;
+        }
+        sourceCache[ad].transform.position = position;
+        sourceCache[ad].spatialBlend = 1;
         return ad;
     }
 
