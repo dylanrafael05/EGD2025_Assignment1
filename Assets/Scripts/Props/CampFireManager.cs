@@ -15,6 +15,8 @@ public class CampFireManager : MonoBehaviour
         campFireVFXComponent = GetComponent<CampFireVFXComponent>();
     }
 
+
+
     public void IncreaseBurn(int incrementValue)
     {
         fireStrength += incrementValue;

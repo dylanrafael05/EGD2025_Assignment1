@@ -1142,14 +1142,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: CampFire
       objectReference: {fileID: 0}
-    - target: {fileID: 4608026848099489942, guid: 50b19ca92273b52429aef2be53c91f13, type: 3}
-      propertyPath: m_Layer
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 4608026848099489942, guid: 50b19ca92273b52429aef2be53c91f13, type: 3}
-      propertyPath: m_TagString
-      value: CampFire
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
