@@ -389,6 +389,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 528117546144763580, guid: 0cc5160422587ca4bba982c33de74b98, type: 3}
+      propertyPath: ShapeModule.m_Scale.x
+      value: 125
+      objectReference: {fileID: 0}
+    - target: {fileID: 528117546144763580, guid: 0cc5160422587ca4bba982c33de74b98, type: 3}
+      propertyPath: ShapeModule.m_Scale.z
+      value: 125
+      objectReference: {fileID: 0}
+    - target: {fileID: 3925982913322925549, guid: 0cc5160422587ca4bba982c33de74b98, type: 3}
+      propertyPath: ShapeModule.m_Scale.x
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 3925982913322925549, guid: 0cc5160422587ca4bba982c33de74b98, type: 3}
+      propertyPath: ShapeModule.m_Scale.y
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 6009535196719927967, guid: 0cc5160422587ca4bba982c33de74b98, type: 3}
+      propertyPath: ShapeModule.m_Scale.x
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 6009535196719927967, guid: 0cc5160422587ca4bba982c33de74b98, type: 3}
+      propertyPath: ShapeModule.m_Scale.y
+      value: 80
+      objectReference: {fileID: 0}
     - target: {fileID: 7550261570492719873, guid: 0cc5160422587ca4bba982c33de74b98, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
