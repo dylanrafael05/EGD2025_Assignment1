@@ -3,13 +3,23 @@ using UnityEngine;
 
 public class PlayerCameraComponent : MonoBehaviour
 {
+    public static PlayerCameraComponent instance;
     [SerializeField] private GameObject cameraSocket;
-    [SerializeField] private Camera cameraComponent;
+    [SerializeField] public Camera cameraComponent;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private float rotationLerpFactor;
     [SerializeField] private float xAngle;
 
     [NonSerialized] private float desiredRotation = 45;
+
+
+
+    void Awake()
+    {
+        instance = this;
+    }
+
+
 
     public float GenericPerspective(float direction)
     {

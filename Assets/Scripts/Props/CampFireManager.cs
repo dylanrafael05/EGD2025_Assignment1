@@ -16,6 +16,8 @@ public class CampFireManager : MonoBehaviour
         instance = this;
     }
 
+
+
     public void IncreaseBurn(int incrementValue)
     {
         fireStrength += incrementValue;
