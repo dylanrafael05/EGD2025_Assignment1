@@ -4,39 +4,17 @@ using UnityEngine;
 
 public class ItemComponent : MonoBehaviour
 {
-    [SerializeField] private GameObject inspectElement;
-    [SerializeField] private bool isStored = false;
+    public SpecialItem Specification { get; set; }
 
-    public GameObject InspectElement => inspectElement;
-
-
-    void Awake()
+    public ItemComponent Store()
     {
-
+        gameObject.SetActive(false);
+        return this;
     }
 
-
-
-    void Update()
+    public ItemComponent Drop()
     {
-        if (isStored)
-        {
-            transform.position = PlayerManager.instance.transform.position + Vector3.down * 25;
-        }
-    }
-
-
-
-    public GameObject Store()
-    {
-        isStored = true;
-        return gameObject;
-    }
-
-    public GameObject Drop()
-    {
-        isStored = false;
-        transform.position = PlayerManager.instance.transform.position;
-        return gameObject;
+        gameObject.SetActive(true);
+        return this;
     }
 }

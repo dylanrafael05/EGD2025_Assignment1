@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5974754148077424485}
   - component: {fileID: 6232633050259320548}
   - component: {fileID: 5063693756845698158}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Point Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,7 +44,7 @@ Light:
   serializedVersion: 11
   m_Type: 2
   m_Color: {r: 1, g: 0.65138906, b: 0, a: 1}
-  m_Intensity: 6
+  m_Intensity: 0
   m_Range: 50
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -130,7 +130,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5263851952515434284}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: SpriteSocket
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -165,9 +165,10 @@ GameObject:
   - component: {fileID: 8235789841555456661}
   - component: {fileID: 8718884722386129101}
   - component: {fileID: 6012259000727617284}
-  m_Layer: 0
+  - component: {fileID: 409796645030761118}
+  m_Layer: 8
   m_Name: CampFire
-  m_TagString: Untagged
+  m_TagString: CampFire
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -205,7 +206,7 @@ BoxCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 2, y: 2, z: 2}
@@ -235,6 +236,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pointLight: {fileID: 0}
+--- !u!114 &409796645030761118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4608026848099489942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57379ea764f84c5458e3a9b96ad3af43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bounds: {fileID: 8235789841555456661}
+  randomizeRotation: 0
+  minSize: 1
+  maxSize: 1
+  debugGround: 0
 --- !u!1 &5310230930621770096
 GameObject:
   m_ObjectHideFlags: 0
@@ -245,7 +263,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2956995387937795337}
   - component: {fileID: 3504600880243258275}
-  m_Layer: 0
+  - component: {fileID: 1028343118842576188}
+  m_Layer: 8
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -322,3 +341,15 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1028343118842576188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5310230930621770096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9e76b8a727eb44e9dad337dcdf2883, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

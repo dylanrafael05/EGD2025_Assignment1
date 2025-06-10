@@ -44,9 +44,9 @@ public class PlayerManager : MonoBehaviour
 
     void Update()
     {
-        rotation = cameraComponent.GenericPerspective(InputManager.instance.cameraFloat);
-        currentState = (PlayerState)movementComponent.GenericMove(InputManager.instance.moveVector, rotation);
+        rotation = cameraComponent.GenericPerspective(InputManager.instance.CameraFloat);
+        currentState = (PlayerState)movementComponent.GenericMove(InputManager.instance.MoveVector, rotation);
         audioComponent.GenericUpdate((int)currentState);
-        playerAnimationComponent.GenericUpdate((int)currentState, InputManager.instance.moveVector, rotation);
+        playerAnimationComponent.GenericUpdate((int)currentState, InputManager.instance.MoveVector, rotation);
     }
 }

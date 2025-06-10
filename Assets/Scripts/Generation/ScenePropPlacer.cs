@@ -13,7 +13,7 @@ public abstract class ScenePropPlacer : MonoBehaviour
 
     private InstancePool<SceneProp> instancePool;
 
-    void Awake()
+    protected void Awake()
     {
         instancePool = InstancePool.OfPrefab(prefab);
     }
@@ -35,27 +35,30 @@ public abstract class ScenePropPlacer : MonoBehaviour
 
         var permit = true;
 
-        if (GenerationUtils.IsPathAt(position))
+        if (checkForOverlap)
         {
-            permit = false;
-        }
-        else if (checkForOverlap)
-        {
-            var bounds = prop.Bounds.bounds;
-
-            var count = Physics.OverlapBoxNonAlloc(
-                bounds.center,
-                bounds.extents / 2,
-                colliderResults,
-                prop.transform.rotation,
-                ~Layers.GroundMask & ~Layers.IgnoreRaycastMask);
-
-            for (int i = 0; i < count; i++)
+            if (GenerationUtils.IsPathAt(position))
             {
-                if (!colliderResults[i].IsChildOf(prop.transform))
+                permit = false;
+            }
+            else
+            {
+                var bounds = prop.Bounds.bounds;
+
+                var count = Physics.OverlapBoxNonAlloc(
+                    bounds.center,
+                    bounds.extents / 2,
+                    colliderResults,
+                    prop.transform.rotation,
+                    ~Layers.GroundMask & ~Layers.IgnoreRaycastMask);
+
+                for (int i = 0; i < count; i++)
                 {
-                    permit = false;
-                    break;
+                    if (!colliderResults[i].IsChildOf(prop.transform))
+                    {
+                        permit = false;
+                        break;
+                    }
                 }
             }
         }
@@ -63,7 +66,6 @@ public abstract class ScenePropPlacer : MonoBehaviour
         if (!permit)
         {
             instancePool.Release(prop);
-
             return null;
         }
 

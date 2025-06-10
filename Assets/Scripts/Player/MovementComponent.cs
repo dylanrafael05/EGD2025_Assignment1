@@ -19,13 +19,14 @@ public class MovementComponent : MonoBehaviour
 
     public int GenericMove(Vector2 moveVector, float rotation)
     {
-        float3 tempVector = new float3(moveVector.x * moveSpeed * Time.deltaTime,
+        float3 tempVector = new float3(moveVector.x * moveSpeed,
                                         rb.linearVelocity.y,
-                                        moveVector.y * moveSpeed * Time.deltaTime);
+                                        moveVector.y * moveSpeed);
         rb.linearVelocity = Quaternion.Euler(0, rotation, 0) * tempVector;;
         
-        var loc = transform.position;
-        loc.y = GenerationUtils.StandHeightAt(loc.asfloat3().xz);
+        var loc = transform.position.tofloat3();
+        loc.y = GenerationUtils.StandHeightAt(loc.xz);
+        loc.xz = GeneratorManager.Instance.ClampInsideWorld(loc.xz);
         transform.position = loc;
         
         if (moveVector.x == 0 && moveVector.y == 0)

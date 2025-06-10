@@ -8,11 +8,12 @@ public class CampFireManager : MonoBehaviour
     [NonSerialized] private CampFireVFXComponent campFireVFXComponent;
     [NonSerialized] private int fireStrength;
 
-
+    public int TotalUsedLogs => fireStrength;
 
     void Awake()
     {
         campFireVFXComponent = GetComponent<CampFireVFXComponent>();
+        instance = this;
     }
 
     public void IncreaseBurn(int incrementValue)

@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class SceneProp : PoolableBehaviour
@@ -13,6 +14,12 @@ public class SceneProp : PoolableBehaviour
     [SerializeField] private bool debugGround;
 
     public BoxCollider Bounds => bounds;
+    private float3 baseScale;
+
+    void Awake()
+    {
+        baseScale = transform.localScale;
+    }
 
     public void ApplyRandomization()
     {
@@ -22,7 +29,7 @@ public class SceneProp : PoolableBehaviour
         }
 
         var scale = UnityEngine.Random.Range(minSize, maxSize);
-        transform.localScale = new Vector3(scale, scale, scale);
+        transform.localScale = baseScale * scale;
     }
 
     void Update()

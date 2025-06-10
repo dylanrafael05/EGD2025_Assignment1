@@ -3,10 +3,10 @@ using UnityEngine;
 public class PlayerInventoryComponent : MonoBehaviour
 {
     [SerializeField] private int totalFireWood = 0;
-    [SerializeField] private GameObject currentItem;
+    [SerializeField] private ItemComponent currentItem;
 
     public int TotalFireWood => totalFireWood;
-    public GameObject CurrentItem => currentItem;
+    public ItemComponent CurrentItem => currentItem;
 
 
     public int ObtainFireWood()
@@ -15,18 +15,18 @@ public class PlayerInventoryComponent : MonoBehaviour
 
     }
 
-    public GameObject ReplaceItem(GameObject newItem)
+    public ItemComponent ReplaceItem(ItemComponent newItem)
     {
         if (currentItem == newItem)
         {
             return currentItem;
         }
 
-        GameObject oldItem = currentItem;
-        currentItem = newItem.GetComponent<ItemComponent>().Store();
+        var oldItem = currentItem;
+        currentItem = newItem.Store();
         if (oldItem != null)
         {
-            oldItem.GetComponent<ItemComponent>().Drop();
+            oldItem.Drop();
         }
         return oldItem;
     }
@@ -37,6 +37,7 @@ public class PlayerInventoryComponent : MonoBehaviour
         if (currentItem != null)
         {
             totalValue++;
+            SpecialItemPlacer.Instance.BurnSpecialItem();
         }
         totalFireWood = 0;
         currentItem = null;

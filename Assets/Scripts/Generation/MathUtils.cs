@@ -8,6 +8,15 @@ using Unity.Mathematics;
 public static class MathUtils
 {
     /// <summary>
+    /// Rotate the provided vector by the provided angle (in radians).
+    /// </summary>
+    public static float2 Rotate2D(this float2 xy, float rot)
+    {
+        math.sincos(rot, out var s, out var c);
+        return math.mul(math.float2x2(c, -s, s, c), xy);
+    }
+
+    /// <summary>
     /// Compute a smooth interpolation kernel (ranged between zero and one)
     /// for the provided two-dimensional value.
     /// </summary>

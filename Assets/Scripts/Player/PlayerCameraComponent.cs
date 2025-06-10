@@ -7,13 +7,17 @@ public class PlayerCameraComponent : MonoBehaviour
     [SerializeField] private Camera cameraComponent;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private float rotationLerpFactor;
+    [SerializeField] private float xAngle;
+
     [NonSerialized] private float desiredRotation = 45;
-
-
 
     public float GenericPerspective(float direction)
     {
-        cameraSocket.transform.localRotation = Quaternion.Lerp(cameraSocket.transform.localRotation, Quaternion.Euler(45, desiredRotation, transform.eulerAngles.z), rotationLerpFactor * Time.deltaTime);
+        cameraSocket.transform.localRotation = Quaternion.Lerp(
+            cameraSocket.transform.localRotation,
+            Quaternion.Euler(xAngle, desiredRotation, 0),
+            rotationLerpFactor * Time.deltaTime
+        );
         spriteRenderer.transform.forward = -cameraComponent.transform.forward;
 
         if (direction > 0)

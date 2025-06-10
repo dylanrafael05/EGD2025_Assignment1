@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -26,28 +27,24 @@ public class PlayerInteractionComponent : MonoBehaviour
         {
             return;
         }
-                    
-        if (other.CompareTag("Tree"))
+
+        if (InputManager.instance.InteractBool)
         {
-            if (InputManager.instance.interactBool)
+            if (other.CompareTag("Tree"))
             {
                 playerInventoryComponent.ObtainFireWood();
                 other.gameObject.transform.parent.parent.gameObject.GetComponent<TreeProp>().ChopDown();
             }
-        }
-        else if (other.CompareTag("Item"))
-        {
-            if (InputManager.instance.interactBool)
+            else if (other.CompareTag("Item"))
             {
-                playerInventoryComponent.ReplaceItem(other.gameObject);
+                playerInventoryComponent.ReplaceItem(other.gameObject.GetComponent<ItemComponent>());
             }
-        }
-        else if (other.CompareTag("CampFire"))
-        {
-            if (InputManager.instance.interactBool)
+            else if (other.CompareTag("CampFire"))
             {
                 other.GetComponent<CampFireManager>().IncreaseBurn(playerInventoryComponent.BurnInventory());
             }
+
+            InputManager.instance.InteractBool = false;
         }
     }
 }

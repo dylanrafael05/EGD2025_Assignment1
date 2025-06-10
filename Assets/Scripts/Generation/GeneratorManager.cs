@@ -63,6 +63,7 @@ public class GeneratorManager : MonoBehaviour
     [SerializeField] private float pathIndent = 0.1f;
     [SerializeField] private float pathSubEffect = 0.1f;
     [SerializeField] private float pathRadiusFromVoid = 3f;
+    [SerializeField] private float pathNearThreshold = 1f;
 
     // Implementation variables //
     private InstancePool<ChunkInstance> chunkPool;
@@ -74,6 +75,8 @@ public class GeneratorManager : MonoBehaviour
     public float UnitSideLength => gridSideLength / gridCount;
     public int GenerationRadiusInChunks => Mathf.CeilToInt(generationRadius / gridSideLength);
 
+
+    public float VoidRadius => voidRadius;
 
     public float2 ClampInsideWorld(float2 position)
     {
@@ -151,7 +154,7 @@ public class GeneratorManager : MonoBehaviour
         // Optimization :: heightmap values that are too far away from zero 
         // can be assumed not to border zero (unless the paths are way too large)
         var heightmap = CalcPathHeightmapAtLocation(id, pos);
-        if (math.abs(heightmap) > 0.1f)
+        if (math.abs(heightmap) > pathNearThreshold)
             return false;
 
         bool seenPos = false;
@@ -321,6 +324,16 @@ public class GeneratorManager : MonoBehaviour
     private void Generate(int2 location)
     {
         GenerateTask(location).Forget();
+    }
+
+    void OnValidate()
+    {
+        foreach (var chunk in loadedChunks.Values)
+        {
+            chunkPool.Release(chunk);
+        }
+
+        loadedChunks.Clear();
     }
 
     void Awake()

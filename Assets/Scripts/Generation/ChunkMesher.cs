@@ -95,6 +95,18 @@ public class ChunkMesher
 
         gridPosition = math.int2(divd);
         gridFrac = math.frac(divd);
+
+        if (gridPosition.x > gridCount)
+        {
+            gridPosition.x--;
+            gridFrac.x++;
+        }
+        
+        if (gridPosition.y > gridCount)
+        {
+            gridPosition.y--;
+            gridFrac.y++;
+        }
     }
 
     /// <summary>
