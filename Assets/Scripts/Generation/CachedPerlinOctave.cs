@@ -23,14 +23,15 @@ public class CachedPerlinNoise : ChunkCachers.IChunkCacher
         public float Scale => scale;
         public float Amplitude => amplitude;
 
+        private readonly object instanceLock = new();
         private CachedPerlinNoise instance;
         public CachedPerlinNoise GetInstance()
         {
-            if (instance == null
-            || instance.octaveScale != scale
-            || instance.octaveAmplitude != amplitude)
+            lock (instanceLock)
             {
-                lock (this)
+                if (instance == null
+                || instance.octaveScale != scale
+                || instance.octaveAmplitude != amplitude)
                 {
                     if (instance != null
                     && instance.octaveScale == scale
@@ -40,7 +41,7 @@ public class CachedPerlinNoise : ChunkCachers.IChunkCacher
                     if (instance != null)
                         ChunkCachers.Unregister(instance);
 
-                    instance = CachedPerlinNoise.OfScale(scale, amplitude);
+                    Interlocked.Exchange(ref instance, CachedPerlinNoise.OfScale(scale, amplitude));
                 }
             }
 
@@ -87,7 +88,7 @@ public class CachedPerlinNoise : ChunkCachers.IChunkCacher
                 return totalAmplitude;
             }
         }
-        
+
 
         /// <summary>
         /// Sample this fractal noise instance.
@@ -165,12 +166,22 @@ public class CachedPerlinNoise : ChunkCachers.IChunkCacher
         position *= octaveScale;
 
         var corners = MathUtils.Corners(position);
-        var grads = math.float2x4(
-            cached.Get(chunk, (int2)corners[0]),
-            cached.Get(chunk, (int2)corners[1]),
-            cached.Get(chunk, (int2)corners[2]),
-            cached.Get(chunk, (int2)corners[3])
+        Debug.Assert(
+            corners.c0.x <= position.x &&
+            corners.c0.y <= position.y &&
+            corners.c1.x <= position.x &&
+            corners.c1.y >= position.y &&
+            corners.c2.x >= position.x &&
+            corners.c2.y >= position.y &&
+            corners.c3.x >= position.x &&
+            corners.c3.y <= position.y
         );
+
+        var grads = math.float2x4(
+            cached.Get(chunk, corners[0]),
+            cached.Get(chunk, corners[1]),
+            cached.Get(chunk, corners[2]),
+            cached.Get(chunk, corners[3]));
 
         // Finally, use our gradients to calculate the perlin noise results //
         return MathUtils.PerlinNoiseFromGrads(math.frac(position), grads) * octaveAmplitude;

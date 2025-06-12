@@ -14,12 +14,15 @@ public class SceneProp : PoolableBehaviour
     [SerializeField] private bool debugGround;
 
     public BoxCollider Bounds => bounds;
+    public ChunkInstance Chunk { get; set; }
     private float3 baseScale;
 
-    void Awake()
+    protected void Awake()
     {
         baseScale = transform.localScale;
     }
+
+    public virtual void OnPlace() { }
 
     public void ApplyRandomization()
     {

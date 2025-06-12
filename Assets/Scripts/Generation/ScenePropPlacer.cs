@@ -70,6 +70,8 @@ public abstract class ScenePropPlacer : MonoBehaviour
         }
 
         chunk.AttachProp(prop);
+        prop.Chunk = chunk;
+        prop.OnPlace();
         return prop;
     }
 }

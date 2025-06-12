@@ -53,18 +53,18 @@ public static class MathUtils
     /// defined in the order
     /// <c>{[0] = (0, 0), [1] = (0, 1), [2] = (1, 1), [3] = (1, 0)}</c>.
     /// </summary>
-    public static float2x4 BinaryPairs => math.float2x4(
-        math.float2(0, 0),
-        math.float2(0, 1),
-        math.float2(1, 1),
-        math.float2(1, 0)
+    public static int2x4 BinaryPairs => math.int2x4(
+        math.int2(0, 0),
+        math.int2(0, 1),
+        math.int2(1, 1),
+        math.int2(1, 0)
     );
 
     /// <summary>
     /// A matrix whose rows are the permutations of the two signs,
     /// defined in the same order as is <see cref="BinaryPairs"/>.
     /// </summary>
-    public static float2x4 SignPairs => BinaryPairs * 2 - 1;
+    public static int2x4 SignPairs => BinaryPairs * 2 - 1;
 
     /// <summary>
     /// Compute a matrix whose rows are the corners of the unit-size bounding square
@@ -74,11 +74,11 @@ public static class MathUtils
     /// <c>tXY</c> represents the top-left corner <c>t</c> of the box, summed with the
     /// vector <c>[X, Y]</c>.
     /// </summary>
-    public static float2x4 Corners(float2 x)
+    public static int2x4 Corners(float2 x)
     {
-        var xf = math.floor(x);
+        var xf = math.int2(math.floor(x));
 
-        return math.float2x4(xf, xf, xf, xf) + BinaryPairs;
+        return math.int2x4(xf, xf, xf, xf) + BinaryPairs;
     }
 
     /// <summary>
@@ -87,7 +87,10 @@ public static class MathUtils
     /// </summary>
     public static float SampleCorners(float2 x, float4 corners)
     {
-        float2 f = Smootherstep(math.frac(x));
+        if (x.x > 1 || x.y > 1 || x.x < 0 || x.y < 0)
+            x = math.frac(x);
+
+        float2 f = Smootherstep(x);
 
         //? Does it make sense that the corners are passed this way ?//
         return math.lerp(

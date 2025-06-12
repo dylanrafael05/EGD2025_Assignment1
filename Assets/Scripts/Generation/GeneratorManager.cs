@@ -47,14 +47,23 @@ public class GeneratorManager : MonoBehaviour
     [SerializeField] private float voidColorBeginHeight;
     [SerializeField] private float voidColorFullHeight;
     [SerializeField] private Color voidColor;
-    
+
+    [Header("Generation Settings -- Rocks")]
+    [SerializeField] private CachedPerlinNoise.Fractal rockinessNoise;
+    [SerializeField] private float rockinessThreshold;
+    [SerializeField] private float treeDensityInRocks;
+
     [Header("Generation Settings -- Coloration")]
     [SerializeField] private float groundColorMinHeight;
     [SerializeField] private float groundColorMaxHeight;
     [SerializeField] private Color pathColor;
     [SerializeField] private Gradient groundColor;
-    
+    [SerializeField] private Gradient rockyGroundColor;
+
     [Header("Generation Settings -- Forest")]
+    [SerializeField] private CachedPerlinNoise.Fractal forestKindNoise;
+    [SerializeField] private float coniferBias = 0.1f;
+    [SerializeField] private float forestKindBorder = 0.1f;
     [SerializeField] private float forestAffectGridSize = 3f;
     [SerializeField] private float forestDecayOnKill = 0.5f;
     
@@ -64,6 +73,10 @@ public class GeneratorManager : MonoBehaviour
     [SerializeField] private float pathSubEffect = 0.1f;
     [SerializeField] private float pathRadiusFromVoid = 3f;
     [SerializeField] private float pathNearThreshold = 1f;
+
+    [Header("Debugging")]
+    [SerializeField] private bool showPathHeighmap = false;
+    [SerializeField] private bool disableParallel = false;
 
     // Implementation variables //
     private InstancePool<ChunkInstance> chunkPool;
@@ -121,6 +134,12 @@ public class GeneratorManager : MonoBehaviour
     public float CalcForestDampen(ChunkID id, float2 pos)
         => forestDampenWeight.Get(id, pos);
 
+    public float CalcRockiness(ChunkID id, float2 pos)
+        => rockinessNoise.Get(id, pos, true);
+
+    public bool CalcIsRocky(ChunkID id, float2 pos)
+        => CalcRockiness(id, pos) > rockinessThreshold;
+
     public float CalcForestChance(ChunkID id, float2 pos)
     {
         if (CalcDistanceIntoVoid(pos) > 0)
@@ -130,8 +149,22 @@ public class GeneratorManager : MonoBehaviour
                    * math.pow(1 - CalcTerrainHeight(id, pos, normalize: true), 0.5f)
                    * forestDampenWeight.Get(id, pos);
 
+        if (CalcIsRocky(id, pos))
+            result *= treeDensityInRocks;
+
         return result * (1 - CalcCampfireOverrideFactor(pos));
     }
+
+    /// <summary>
+    /// 1 -> conifer,
+    /// 0 -> dead
+    /// </summary>
+    public float CalcForestKind(ChunkID id, float2 pos)
+        => math.smoothstep(
+            0.5f - forestKindBorder / 2 + coniferBias / 2,
+            0.5f + forestKindBorder / 2 + coniferBias / 2,
+            forestKindNoise.Get(id, pos, true)
+        );
 
     public float CalcPathHeightmapAtLocation(ChunkID id, float2 pos)
     {
@@ -143,7 +176,7 @@ public class GeneratorManager : MonoBehaviour
 
         var start = CalcCampfireOverrideFactor(pos);
 
-        result = math.lerp(result, start - 0.5f, start*start);
+        result = math.lerp(result, start - 0.5f, start * start);
         result += math.pow(CalcDistanceIntoVoid(pos, -pathRadiusFromVoid), 3);
 
         return result;
@@ -162,7 +195,7 @@ public class GeneratorManager : MonoBehaviour
 
         for (int i = 0; i < 4; i++)
         {
-            var p = pos + pathSearchRadius * MathUtils.SignPairs[i];
+            var p = pos + pathSearchRadius * (float2)MathUtils.SignPairs[i];
             var h = CalcPathHeightmapAtLocation(id, p);
 
             if (h > 0) seenPos = true;
@@ -227,9 +260,23 @@ public class GeneratorManager : MonoBehaviour
 
             vertex.y = CalcTerrainHeight(chunk.ID, vpos) + voidOffset;
 
+            if (showPathHeighmap)
+            {
+                vertex.y = CalcPathHeightmapAtLocation(chunk.ID, vpos) * 20;
+                chunk.GroundMesher.Colors[pos] = vertex.y < 0
+                    ? Color.red
+                    : Color.green;
+
+                continue;
+            }
+
             // Populate vertex colors based on vertex height //
+            var baseColorGradient = CalcIsRocky(chunk.ID, vpos)
+                ? rockyGroundColor
+                : groundColor;
+
             chunk.GroundMesher.Colors[pos] = Color.Lerp(
-                groundColor.Evaluate(Mathf.InverseLerp(groundColorMinHeight, groundColorMaxHeight, vertex.y)),
+                baseColorGradient.Evaluate(Mathf.InverseLerp(groundColorMinHeight, groundColorMaxHeight, vertex.y)),
                 voidColor,
                 1 - Mathf.Clamp01(
                     Mathf.InverseLerp(voidColorFullHeight, voidColorBeginHeight, voidOffset))
@@ -251,7 +298,7 @@ public class GeneratorManager : MonoBehaviour
             var vpos = pathVertex.tofloat3().xz;
             vpos += (float2)chunk.Position * gridSideLength;
 
-            if (!CalcIsPath(chunk.ID, vpos))
+            if (showPathHeighmap || !CalcIsPath(chunk.ID, vpos))
             {
                 pathVertex.y -= pathIndent;
             }
@@ -280,10 +327,13 @@ public class GeneratorManager : MonoBehaviour
         var chunk = chunkPool.Get();
         generatingChunks.Add(location);
 
-        await UniTask.SwitchToThreadPool();
-
         chunk.ID = ChunkID.Unique();
         chunk.Position = location;
+
+        if (!disableParallel)
+        {
+            await UniTask.SwitchToThreadPool();
+        }
 
         if (chunk.NeedsInitialization)
         {
@@ -295,7 +345,10 @@ public class GeneratorManager : MonoBehaviour
         GenerateShape(chunk);
         GeneratePaths(chunk);
 
-        await UniTask.SwitchToMainThread();
+        if (!disableParallel)
+        {
+            await UniTask.SwitchToMainThread();
+        }
 
         // Finalize the mesh and update the instance location //
         chunk.UpdateMeshInfo();

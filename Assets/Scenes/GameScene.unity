@@ -487,12 +487,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 352294550}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1530501156}
+  m_Father: {fileID: 1308882613}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &352294552
 MonoBehaviour:
@@ -612,13 +612,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 410087039}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
+  m_LocalRotation: {x: 0.55403227, y: -0.21201213, z: 0.14845248, w: 0.79124016}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 70, y: -30, z: 0}
 --- !u!114 &410087042
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -731,6 +731,55 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inventory: {fileID: 850509089}
+--- !u!1 &543789357
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 543789358}
+  - component: {fileID: 543789359}
+  m_Layer: 0
+  m_Name: Grass Generator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &543789358
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543789357}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1308882613}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &543789359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543789357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69284f1e6a5d7714db1dfd5cc39a7ed8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 7656263991256125156, guid: 5f9965f790f4a6a4f92be039218b9a99, type: 3}
+  maxChance: 1
+  sampleSize: 1.5
+  chancePower: 1
+  chance: 0.1
 --- !u!1 &568925423
 GameObject:
   m_ObjectHideFlags: 0
@@ -898,6 +947,8 @@ MonoBehaviour:
   propPlacers:
   - {fileID: 1544325978}
   - {fileID: 1538519190}
+  - {fileID: 1671371437}
+  - {fileID: 543789359}
   - {fileID: 352294552}
   startAreaInnerRadius: 10
   startAreaOuterRadius: 50
@@ -906,6 +957,16 @@ MonoBehaviour:
   voidColorBeginHeight: 0
   voidColorFullHeight: -50
   voidColor: {r: 0, g: 0, b: 0, a: 0}
+  rockinessNoise:
+    octaves:
+    - scale: 0.008
+      amplitude: 1
+    - scale: 0.02
+      amplitude: 1
+    - scale: 0.4
+      amplitude: 0.2
+  rockinessThreshold: 0.6
+  treeDensityInRocks: 0.1
   groundColorMinHeight: 1
   groundColorMaxHeight: 29
   pathColor: {r: 0.23773581, g: 0.19318196, b: 0.15923813, a: 1}
@@ -939,13 +1000,53 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 6
     m_NumAlphaKeys: 2
+  rockyGroundColor:
+    serializedVersion: 2
+    key0: {r: 0.335849, g: 0.335849, b: 0.335849, a: 1}
+    key1: {r: 0.5698112, g: 0.56411314, b: 0.56411314, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  forestKindNoise:
+    octaves:
+    - scale: 0.003
+      amplitude: 1
+    - scale: 0.01
+      amplitude: 0.5
+  coniferBias: 0.1
+  forestKindBorder: 0.1
   forestAffectGridSize: 6
   forestDecayOnKill: 0.8
   pathSearchRadius: 1.6666666
-  pathIndent: 1
-  pathSubEffect: 0
+  pathIndent: 0.1
+  pathSubEffect: 0.1
   pathRadiusFromVoid: 3
   pathNearThreshold: 0.1
+  showPathHeighmap: 0
+  disableParallel: 0
 --- !u!1 &772579417
 GameObject:
   m_ObjectHideFlags: 0
@@ -1087,6 +1188,10 @@ PrefabInstance:
     - target: {fileID: 2847689824424047689, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
       propertyPath: rotation
       value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 3389028544215729542, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
+      propertyPath: m_RenderPostProcessing
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4121133005026500254, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
       propertyPath: xAngle
@@ -1358,6 +1463,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 976d221b8d6ab0e4b93804294e391915, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1308882612
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1308882613}
+  m_Layer: 0
+  m_Name: Placers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1308882613
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1308882612}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1544325977}
+  - {fileID: 1538519189}
+  - {fileID: 1671371436}
+  - {fileID: 543789358}
+  - {fileID: 352294551}
+  m_Father: {fileID: 1530501156}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1530501155
 GameObject:
   m_ObjectHideFlags: 0
@@ -1388,9 +1529,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 676929291}
-  - {fileID: 1544325977}
-  - {fileID: 1538519189}
-  - {fileID: 352294551}
+  - {fileID: 1308882613}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1538519188
@@ -1418,12 +1557,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1538519188}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1530501156}
+  m_Father: {fileID: 1308882613}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1538519190
 MonoBehaviour:
@@ -1437,7 +1576,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 999e16a44efc92d44846657be789c343, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 3861969245844480926, guid: af46b7a3d7aa4584c8515a2b28ab0fe6, type: 3}
+  prefab: {fileID: 2244114796005443338, guid: f7f1448ed97984248b306766e2946d3c, type: 3}
   maxChance: 10
   sampleSize: 3.333333
   chancePower: 5
@@ -1466,12 +1605,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1544325976}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1530501156}
+  m_Father: {fileID: 1308882613}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1544325978
 MonoBehaviour:
@@ -1486,6 +1625,55 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 409796645030761118, guid: 50b19ca92273b52429aef2be53c91f13, type: 3}
+--- !u!1 &1671371435
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1671371436}
+  - component: {fileID: 1671371437}
+  m_Layer: 0
+  m_Name: Rock Generator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1671371436
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1671371435}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1308882613}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1671371437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1671371435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e547673e75415fe448d2367c38c09564, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 7656263991256125156, guid: 24e3038bea634f943a8aee9f973cfcb7, type: 3}
+  maxChance: 1
+  sampleSize: 3
+  chancePower: 1
+  chance: 0.1
 --- !u!1 &1930206984
 GameObject:
   m_ObjectHideFlags: 0

@@ -32,7 +32,7 @@ public class SpecialItemPlacer : ScenePropPlacer
         if (!CampFireManager.instance)
             return;
 
-        if (index > entries.Length)
+        if (index >= entries.Length)
             return;
 
         var logs = CampFireManager.instance.TotalUsedLogs;

@@ -32,7 +32,17 @@ public class ChunkMesher
         }
 
         public ref T this[int2 xy]
-            => ref array[mesher.GridPositionToIndex(xy)];
+        {
+            get
+            {
+                var idx = mesher.GridPositionToIndex(xy);
+                if (idx < 0 || idx >= array.Length)
+                    throw new InvalidOperationException($"Index out of bounds: {xy}");
+
+                return ref array[mesher.GridPositionToIndex(xy)];
+            }
+        }
+
         public ref T this[int x, int y]
             => ref this[math.int2(x, y)];
 
@@ -96,13 +106,13 @@ public class ChunkMesher
         gridPosition = math.int2(divd);
         gridFrac = math.frac(divd);
 
-        if (gridPosition.x > gridCount)
+        if (gridPosition.x == gridCount)
         {
             gridPosition.x--;
             gridFrac.x++;
         }
-        
-        if (gridPosition.y > gridCount)
+
+        if (gridPosition.y == gridCount)
         {
             gridPosition.y--;
             gridFrac.y++;

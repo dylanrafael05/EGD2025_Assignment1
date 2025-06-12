@@ -33,7 +33,7 @@ public class PlayerInteractionComponent : MonoBehaviour
             if (other.CompareTag("Tree"))
             {
                 playerInventoryComponent.ObtainFireWood();
-                other.gameObject.transform.parent.parent.gameObject.GetComponent<TreeProp>().ChopDown();
+                other.gameObject.transform.parent.GetComponent<TreeProp>().ChopDown();
             }
             else if (other.CompareTag("Item"))
             {

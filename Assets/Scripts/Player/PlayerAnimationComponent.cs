@@ -24,8 +24,6 @@ public class PlayerAnimationComponent : MonoBehaviour
         animator.SetFloat("lookAngleAbs", math.abs(angle / 180));
         sprite.flipX = angle < 0 && math.abs(angle) < 170;
 
-        Debug.Log(angle);
-
         switch (playerState)
         {
             case 0:
