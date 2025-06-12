@@ -55,6 +55,18 @@ MonoBehaviour:
   - name: Walking
     clip: {fileID: 8300000, guid: 130a6107dd846e248a253ce0a1faa722, type: 3}
     volume: 0.5
+  - name: Wind
+    clip: {fileID: 8300000, guid: f268325eca1d7dc448c25255a3921d5f, type: 3}
+    volume: 1
+  - name: Fire
+    clip: {fileID: 8300000, guid: 252ead0ded60395469d22bb4150572d4, type: 3}
+    volume: 0.6
+  - name: Item
+    clip: {fileID: 8300000, guid: a1267a5d6d59feb4d891b77939eefedd, type: 3}
+    volume: 0.6
+  - name: Wood
+    clip: {fileID: 8300000, guid: bad24dbb3acf70d418db3689ceaebedf, type: 3}
+    volume: 0.6
 --- !u!1 &7559036048889330466
 GameObject:
   m_ObjectHideFlags: 0
