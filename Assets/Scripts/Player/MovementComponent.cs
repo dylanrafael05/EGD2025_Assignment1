@@ -22,9 +22,12 @@ public class MovementComponent : MonoBehaviour
         float3 tempVector = new float3(moveVector.x * moveSpeed,
                                         rb.linearVelocity.y,
                                         moveVector.y * moveSpeed);
-        rb.linearVelocity = Quaternion.Euler(0, rotation, 0) * tempVector;
-
-        SnapToGround();
+        rb.linearVelocity = Quaternion.Euler(0, rotation, 0) * tempVector;;
+        
+        var loc = transform.position.tofloat3();
+        loc.y = GenerationUtils.GroundHeightAt(loc.xz);
+        loc.xz = GeneratorManager.Instance.ClampInsideWorld(loc.xz);
+        transform.position = loc;
         
         if (moveVector.x == 0 && moveVector.y == 0)
         {

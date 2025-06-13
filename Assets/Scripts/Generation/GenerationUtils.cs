@@ -49,45 +49,27 @@ public static class GenerationUtils
     }
 
     /// <summary>
-    /// A type defining the type of mesh being referred to in calls to
-    /// <see cref="HeightAt(float2, ChunkMeshKind, bool)"/>.
-    /// </summary>
-    public enum ChunkMeshKind
-    {
-        Path,
-        Ground
-    }
-    
-    /// <summary>
     /// Check if the ground is a path at the provided location without
     /// performing the expensive perlin noise calculations.
     /// </summary>
     public static bool IsPathAt(float2 location)
-        => PathHeightAt(location) > GroundHeightAt(location);
-        
-    /// <summary>
-    /// Get the greatest height between the path and gronud meshes
-    /// at the provided location.
-    /// </summary>
-    public static float StandHeightAt(float2 location, bool debug = false)
-        => math.max(PathHeightAt(location, debug), GroundHeightAt(location, debug));
+    {
+        var success = GetTriangleInformation(location, out var chunk, out var coordinate, out var triPositions);
 
-    /// <summary>
-    /// Get the height of the path mesh at the provided location.
-    /// </summary>
-    public static float PathHeightAt(float2 location, bool debug = false)
-        => HeightAt(location, ChunkMeshKind.Path, debug);
+        if (!success)
+            return false;
 
+        bool isPath = false;
+        for (int i = 0; i < 3; i++)
+            isPath |= chunk.GroundMesher.IsPath[triPositions[i]].x > 0;
+
+        return isPath;
+    }
+    
     /// <summary>
     /// Get the height of the ground mesh at the provided location.
     /// </summary>
     public static float GroundHeightAt(float2 location, bool debug = false)
-        => HeightAt(location, ChunkMeshKind.Ground, debug);
-
-    /// <summary>
-    /// Get the height of the provided mesh type at the provided location.
-    /// </summary>
-    public static float HeightAt(float2 location, ChunkMeshKind mesh, bool debug = false)
     {
         var success = GetTriangleInformation(location, out var chunk, out var coordinate, out var triPositions);
 
@@ -115,13 +97,7 @@ public static class GenerationUtils
         }
 
         // Get the triangle indices //
-        var mesher = mesh switch
-        {
-            ChunkMeshKind.Path => chunk.PathMesher,
-            ChunkMeshKind.Ground => chunk.GroundMesher,
-
-            _ => throw new InvalidOperationException($"Unknown mesh kind {mesh}.")
-        };
+        var mesher = chunk.GroundMesher;
 
         float3x3 verts = math.float3x3(
             mesher.Vertices[triPositions[0]],

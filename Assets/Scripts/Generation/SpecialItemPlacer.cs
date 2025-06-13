@@ -49,7 +49,8 @@ public class SpecialItemPlacer : ScenePropPlacer
                 prop.GetComponent<ItemComponent>().Specification = entries[index].specification;
             }
         }
-        else if (UnityEngine.Random.value < chanceToPlace
+        else
+        /*if (UnityEngine.Random.value < chanceToPlace
              && chunk.Bounds.center.magnitude < GeneratorManager.Instance.VoidRadius)
         {
             isPlaced = true;
@@ -57,6 +58,17 @@ public class SpecialItemPlacer : ScenePropPlacer
 
             var prop = AttemptCreate(chunk, location, false);
             prop.GetComponent<ItemComponent>().Specification = entries[index].specification;
+        }*/
+        {
+            isPlaced = true;
+            location = GeneratorManager.Instance.CabinLocation
+                + (float2)UnityEngine.Random.insideUnitCircle.normalized
+                * UnityEngine.Random.Range(0.2f, 0.4f)
+                * GeneratorManager.Instance.VoidRadius;
+
+            // Since the organization of this function is a bit messed up
+            // for the moment, recurse to actually try to place the item.
+            PlaceInChunk(chunk);
         }
     }
 }

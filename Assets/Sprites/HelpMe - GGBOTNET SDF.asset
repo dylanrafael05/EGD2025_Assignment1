@@ -63,19 +63,19 @@ Material:
     - _GlowOffset: 0
     - _GlowOuter: 0.05
     - _GlowPower: 0.75
-    - _GradientScale: 10
+    - _GradientScale: 31
     - _LightAngle: 3.1416
     - _MaskSoftnessX: 0
     - _MaskSoftnessY: 0
     - _OutlineSoftness: 0
     - _OutlineUVSpeedX: 0
     - _OutlineUVSpeedY: 0
-    - _OutlineWidth: 0.1
+    - _OutlineWidth: 0.149
     - _PerspectiveFilter: 0.875
     - _Reflectivity: 10
-    - _ScaleRatioA: 0.9
-    - _ScaleRatioB: 0.73125
-    - _ScaleRatioC: 0.73125
+    - _ScaleRatioA: 0.9677419
+    - _ScaleRatioB: 0.78629035
+    - _ScaleRatioC: 0.78629035
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
@@ -172,24 +172,24 @@ MonoBehaviour:
     m_FaceIndex: 0
     m_FamilyName: Help Me
     m_StyleName: Regular
-    m_PointSize: 90
+    m_PointSize: 150
     m_Scale: 1
     m_UnitsPerEM: 2048
-    m_LineHeight: 103.53516
-    m_AscentLine: 84.06738
-    m_CapLine: 83
-    m_MeanLine: 74
+    m_LineHeight: 172.5586
+    m_AscentLine: 140.1123
+    m_CapLine: 138
+    m_MeanLine: 125
     m_Baseline: 0
-    m_DescentLine: -18.413086
-    m_SuperscriptOffset: 84.06738
+    m_DescentLine: -30.688477
+    m_SuperscriptOffset: 140.1123
     m_SuperscriptSize: 0.5
-    m_SubscriptOffset: -18.413086
+    m_SubscriptOffset: -30.688477
     m_SubscriptSize: 0.5
-    m_UnderlineOffset: -12.832031
-    m_UnderlineThickness: 6.591797
-    m_StrikethroughOffset: 29.6
-    m_StrikethroughThickness: 6.591797
-    m_TabWidth: 45
+    m_UnderlineOffset: -21.386719
+    m_UnderlineThickness: 10.986328
+    m_StrikethroughOffset: 50
+    m_StrikethroughThickness: 10.986328
+    m_TabWidth: 75
   m_Material: {fileID: -7321469170737048522}
   m_SourceFontFileGUID: e77ae70cb888f3a4088f27104dc3453f
   m_CreationSettings:
@@ -197,8 +197,8 @@ MonoBehaviour:
     sourceFontFileGUID: e77ae70cb888f3a4088f27104dc3453f
     faceIndex: 0
     pointSizeSamplingMode: 0
-    pointSize: 90
-    padding: 9
+    pointSize: 150
+    padding: 30
     paddingMode: 2
     packingMode: 0
     atlasWidth: 1024
@@ -282,7 +282,7 @@ MonoBehaviour:
   m_ClearDynamicDataOnBuild: 1
   m_AtlasWidth: 1024
   m_AtlasHeight: 1024
-  m_AtlasPadding: 9
+  m_AtlasPadding: 30
   m_AtlasRenderMode: 4165
   m_UsedGlyphRects:
   - m_X: 0
