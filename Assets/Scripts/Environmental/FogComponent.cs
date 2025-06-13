@@ -18,7 +18,7 @@ public class FogComponent : MonoBehaviour
 
     public void SetStormStrength(float fogStrength)
     {
-        fogVFX[0].SetEmission(fogStrength);
+        fogVFX[0].SetEmission(fogStrength/2);
         //fogVFX[0].SetStartLifeTime(defaultStartLifeTime+new Vector2(fogStrength, fogStrength));
     }
 }

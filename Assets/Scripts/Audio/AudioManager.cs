@@ -96,9 +96,32 @@ public class AudioManager : MonoBehaviour
         return ad;
     }
 
+    public int PlayRandomPitch(String audioName)
+    {
+        int ad = PlayGeneric(audioName);
+        if (ad == -1)
+        {
+            return -1;
+        }
+        sourceCache[ad].pitch = math.pow(0.9f,  UnityEngine.Random.Range(-1f, 1f));
+        return ad;
+    }
+
     public int PlayGeneric(String audioName, Vector3 position)
     {
         int ad = PlayGeneric(audioName);
+        if (ad == -1)
+        {
+            return -1;
+        }
+        sourceCache[ad].transform.position = position;
+        sourceCache[ad].spatialBlend = 1;
+        return ad;
+    }
+
+    public int PlayLoop(String audioName, Vector3 position)
+    {
+        int ad = PlayLoop(audioName);
         if (ad == -1)
         {
             return -1;
@@ -115,19 +138,7 @@ public class AudioManager : MonoBehaviour
         {
             return -1;
         }
-        sourceCache[ad].pitch = math.pow(0.9f, UnityEngine.Random.Range(-1f, 1f));
-        return ad;
-    }
-
-    public int PlayLoop(String audioName, Vector3 position)
-    {
-        int ad = PlayLoop(audioName);
-        if (ad == -1)
-        {
-            return -1;
-        }
-        sourceCache[ad].transform.position = position;
-        sourceCache[ad].spatialBlend = 1;
+        sourceCache[ad].pitch = math.pow(0.9f,  UnityEngine.Random.Range(-1f, 1f));
         return ad;
     }
 

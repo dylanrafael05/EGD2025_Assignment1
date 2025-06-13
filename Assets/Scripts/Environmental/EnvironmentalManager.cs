@@ -14,6 +14,7 @@ public class EnvironmentalManager : MonoBehaviour
     [NonSerialized] public static EnvironmentalManager instance;
     [NonSerialized] private StormManager stormManager;
     [NonSerialized] private FogManager fogManager;
+    [NonSerialized] private StormAudioComponent stormAudioComponent;
 
     
     [Header("Storm System")]
@@ -36,6 +37,7 @@ public class EnvironmentalManager : MonoBehaviour
 
         stormManager = GetComponent<StormManager>();
         fogManager = GetComponent<FogManager>();
+        stormAudioComponent = GetComponent<StormAudioComponent>();
     }
 
 
@@ -48,5 +50,6 @@ public class EnvironmentalManager : MonoBehaviour
         stormManager.UpdateStorm((int)currentType, stormStrength);
         fogManager.UpdateFog(fogStrength);
         transform.position = PlayerManager.instance.transform.position;
+        stormAudioComponent.AttemptPlayWind(stormStrength);
     }
 }

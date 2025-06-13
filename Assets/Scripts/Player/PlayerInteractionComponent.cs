@@ -30,11 +30,15 @@ public class PlayerInteractionComponent : MonoBehaviour
 
         if (InputManager.instance.InteractBool)
         {
-            if (other.CompareTag("Tree"))
+            if (other.CompareTag("Tree") && playerInventoryComponent.TotalFireWood < playerInventoryComponent.MaxFireWood)
             {
                 playerInventoryComponent.ObtainFireWood();
                 other.gameObject.transform.parent.GetComponent<TreeProp>().ChopDown();
                 AudioManager.instance.PlayRandomPitch("Wood", other.transform.position);
+            }
+            else if (other.CompareTag("Tree"))
+            {
+                AudioManager.instance.PlayRandomPitch("NoMore", other.transform.position);
             }
             else if (other.CompareTag("Item"))
             {

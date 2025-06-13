@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 374181ea4f8c1ea49a9f1192e56a0d0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sourceCount: 10
+  sourceCount: 25
   sourceCache:
   - {fileID: 6279119643288725857}
   initiationReference:
@@ -57,16 +57,19 @@ MonoBehaviour:
     volume: 0.5
   - name: Wind
     clip: {fileID: 8300000, guid: f268325eca1d7dc448c25255a3921d5f, type: 3}
-    volume: 1
+    volume: 0.8
   - name: Fire
     clip: {fileID: 8300000, guid: 252ead0ded60395469d22bb4150572d4, type: 3}
-    volume: 0.6
+    volume: 0.3
   - name: Item
     clip: {fileID: 8300000, guid: a1267a5d6d59feb4d891b77939eefedd, type: 3}
     volume: 0.6
   - name: Wood
     clip: {fileID: 8300000, guid: bad24dbb3acf70d418db3689ceaebedf, type: 3}
-    volume: 0.6
+    volume: 0.3
+  - name: NoMore
+    clip: {fileID: 8300000, guid: 3c88fd4a32f5b224d8417971fea68058, type: 3}
+    volume: 0.1
 --- !u!1 &7559036048889330466
 GameObject:
   m_ObjectHideFlags: 0
@@ -131,23 +134,14 @@ AudioSource:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.1
-      value: 1
+      time: 0.10671387
+      value: 1.1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
       outWeight: 0
-    - serializedVersion: 3
-      time: 0.30154893
-      value: 0.081080735
-      inSlope: -0.35703227
-      outSlope: -0.35703227
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.6009093
     - serializedVersion: 3
       time: 1
       value: 0
