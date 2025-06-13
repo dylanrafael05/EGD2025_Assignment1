@@ -22,7 +22,7 @@ public class PlayerAnimationComponent : MonoBehaviour
     {
         var angle = Vector2.SignedAngle(moveVector, Vector2.down);
         animator.SetFloat("lookAngleAbs", math.abs(angle / 180));
-        sprite.flipX = angle < 0 && math.abs(angle) < 170;
+        sprite.flipX = (math.abs(angle) < 90 || math.abs(angle) == 180) || (angle < 0 && math.abs(angle) < 170);
 
         switch (playerState)
         {
