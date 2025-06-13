@@ -214,6 +214,7 @@ GameObject:
   - component: {fileID: 7245897435831271095}
   - component: {fileID: 366309323332876861}
   - component: {fileID: 4090549743121208176}
+  - component: {fileID: 4152534627945919465}
   m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
@@ -333,7 +334,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 4, y: 2, z: 4}
+  m_Size: {x: 1, y: 2, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &1593515939589949562
 Rigidbody:
@@ -457,6 +458,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   totalFireWood: 0
+  totalUniqueItem: 0
+  maxFireWood: 10
   currentItem: {fileID: 0}
 --- !u!81 &4090549743121208176
 AudioListener:
@@ -466,6 +469,20 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6752310581709941667}
   m_Enabled: 1
+--- !u!114 &4152534627945919465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6752310581709941667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17a9b74fd6f3a0e4ab6d995b6cd1d64d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rCowerTime: 1
+  rStaggerTime: 2.5
 --- !u!1 &6944484141890823548
 GameObject:
   m_ObjectHideFlags: 0

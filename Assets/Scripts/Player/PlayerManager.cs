@@ -20,6 +20,7 @@ public class PlayerManager : MonoBehaviour
     [NonSerialized] private PlayerAnimationComponent playerAnimationComponent;
     [NonSerialized] private PlayerInteractionComponent playerInteractionComponent;
     [NonSerialized] private PlayerInventoryComponent playerInventoryComponent;
+    [NonSerialized] private Incinerate incinerate;
 
 
 
@@ -38,15 +39,26 @@ public class PlayerManager : MonoBehaviour
         playerAnimationComponent = GetComponent<PlayerAnimationComponent>();
         playerInteractionComponent = GetComponent<PlayerInteractionComponent>();
         playerInventoryComponent = GetComponent<PlayerInventoryComponent>();
+        incinerate = GetComponent<Incinerate>();
     }
 
 
 
     void Update()
     {
-        rotation = cameraComponent.GenericPerspective(InputManager.instance.CameraFloat);
-        currentState = (PlayerState)movementComponent.GenericMove(InputManager.instance.MoveVector, rotation);
+        Vector2 currentMoveVector;
+        if (playerInventoryComponent.TotalUniqueItem >= 1)
+        {
+            currentMoveVector = incinerate.Final();
+        }
+        else
+        {
+            currentMoveVector = InputManager.instance.MoveVector;
+            rotation = cameraComponent.GenericPerspective(InputManager.instance.CameraFloat);
+        }
+
+        currentState = (PlayerState)movementComponent.GenericMove(currentMoveVector, rotation);
         audioComponent.GenericUpdate((int)currentState);
-        playerAnimationComponent.GenericUpdate((int)currentState, InputManager.instance.MoveVector, rotation);
+        playerAnimationComponent.GenericUpdate((int)currentState, currentMoveVector, rotation);
     }
 }

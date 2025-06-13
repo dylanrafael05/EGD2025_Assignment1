@@ -45,7 +45,7 @@ Light:
   m_Type: 2
   m_Color: {r: 1, g: 0.65138906, b: 0, a: 1}
   m_Intensity: 1
-  m_Range: 999
+  m_Range: 10000
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -224,6 +224,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   campFireAnimatorComponent: {fileID: 9199445818143481910}
+  fireStrength: 0
 --- !u!114 &6012259000727617284
 MonoBehaviour:
   m_ObjectHideFlags: 0
