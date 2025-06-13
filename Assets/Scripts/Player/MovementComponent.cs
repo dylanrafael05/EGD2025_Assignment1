@@ -25,7 +25,7 @@ public class MovementComponent : MonoBehaviour
         rb.linearVelocity = Quaternion.Euler(0, rotation, 0) * tempVector;;
         
         var loc = transform.position.tofloat3();
-        loc.y = GenerationUtils.StandHeightAt(loc.xz);
+        loc.y = GenerationUtils.GroundHeightAt(loc.xz);
         loc.xz = GeneratorManager.Instance.ClampInsideWorld(loc.xz);
         transform.position = loc;
         

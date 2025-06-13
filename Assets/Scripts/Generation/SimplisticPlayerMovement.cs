@@ -23,7 +23,7 @@ public class SimplisticPlayerMovement : MonoBehaviour
     {
         // Snap to the ground on the ray from the camera to this instance //
         var loc = transform.position;
-        loc.y = GenerationUtils.StandHeightAt(loc.asfloat3().xz);
+        loc.y = GenerationUtils.GroundHeightAt(loc.asfloat3().xz);
         transform.position = loc;
 
         // Calculate what must happen this frame //

@@ -8,8 +8,6 @@ using UnityEngine;
 public class ChunkInstance : PoolableBehaviour
 {
     [SerializeField] private GameObject propContainer;
-    [SerializeField] private MeshFilter roadFilter;
-    [SerializeField] private MeshCollider roadCollider;
 
     private MeshFilter _filter;
     private MeshRenderer _renderer;
@@ -39,22 +37,6 @@ public class ChunkInstance : PoolableBehaviour
     /// </para>
     /// </summary>
     public ChunkMesher GroundMesher { get; private set; }
-    /// <summary>
-    /// The mesh data associated with the 'roads' of this chunk.
-    /// 
-    /// <para>
-    /// ! Safety !
-    /// <br/>
-    /// It is assumed that triangle information, uv information, and vertex x and z coordinates
-    /// do not change after this instance is first created.
-    /// </para>
-    /// </summary>
-    public ChunkMesher PathMesher { get; private set; }
-
-    /// <summary>
-    /// Whether or not this chunk is fresh and needs setup, or can rely on already existing data.
-    /// </summary>
-    public bool NeedsInitialization { get; set; } = true;
 
     void Awake()
     {
@@ -63,7 +45,6 @@ public class ChunkInstance : PoolableBehaviour
         _collider = GetComponent<MeshCollider>();
 
         GroundMesher ??= new(GeneratorManager.Instance.gridCount, GeneratorManager.Instance.UnitSideLength);
-        PathMesher ??= new(GeneratorManager.Instance.gridCount, GeneratorManager.Instance.UnitSideLength);
 
         /*//
             DebugLabels.Attach(
@@ -77,13 +58,9 @@ public class ChunkInstance : PoolableBehaviour
     public void UpdateMeshInfo()
     {
         GroundMesher.UpdateMeshInfo();
-        PathMesher.UpdateMeshInfo();
 
         _filter.mesh = GroundMesher.Mesh;
         _collider.sharedMesh = GroundMesher.Mesh;
-
-        roadFilter.mesh = PathMesher.Mesh;
-        roadCollider.sharedMesh = PathMesher.Mesh;
     }
 
     public void AttachProp(PoolableBehaviour prop)

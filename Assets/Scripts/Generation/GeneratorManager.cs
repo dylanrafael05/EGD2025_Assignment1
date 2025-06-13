@@ -257,6 +257,7 @@ public class GeneratorManager : MonoBehaviour
         foreach (var pos in Griderable.ForInclusive(gridCount))
         {
             ref var vertex = ref chunk.GroundMesher.Vertices[pos];
+            ref var isPath = ref chunk.GroundMesher.IsPath[pos];
 
             // Apply height calculations //
             var vpos = vertex.tofloat3().xz;
@@ -281,37 +282,24 @@ public class GeneratorManager : MonoBehaviour
                 ? rockyGroundColor
                 : groundColor;
 
+            var baseColor = baseColorGradient.Evaluate(
+                Mathf.InverseLerp(groundColorMinHeight, groundColorMaxHeight, vertex.y));
+
+            isPath = CalcIsPath(chunk.ID, vpos)
+                ? Vector2.one 
+                : Vector2.zero;
+
+            if (isPath.x > 0)
+            {
+                baseColor = pathColor;
+            }
+
             chunk.GroundMesher.Colors[pos] = Color.Lerp(
-                baseColorGradient.Evaluate(Mathf.InverseLerp(groundColorMinHeight, groundColorMaxHeight, vertex.y)),
+                baseColor,
                 voidColor,
                 1 - Mathf.Clamp01(
                     Mathf.InverseLerp(voidColorFullHeight, voidColorBeginHeight, voidOffset))
             );
-        }
-    }
-
-    private void GeneratePaths(ChunkInstance chunk)
-    {
-        using var marker = ProfilerUtil.Enter("Generation.GenerateChunk.Paths");
-
-        foreach (var pos in Griderable.ForInclusive(gridCount))
-        {
-            ref var pathVertex = ref chunk.PathMesher.Vertices[pos];
-            ref var grndVertex = ref chunk.GroundMesher.Vertices[pos];
-
-            pathVertex.y = grndVertex.y;
-
-            var vpos = pathVertex.tofloat3().xz;
-            vpos += (float2)chunk.Position * gridSideLength;
-
-            if (showPathHeighmap || !CalcIsPath(chunk.ID, vpos))
-            {
-                pathVertex.y -= pathIndent;
-            }
-            else
-            {
-                grndVertex.y -= pathIndent;
-            }
         }
     }
 
@@ -341,15 +329,7 @@ public class GeneratorManager : MonoBehaviour
             await UniTask.SwitchToThreadPool();
         }
 
-        if (chunk.NeedsInitialization)
-        {
-            Array.Fill(chunk.PathMesher.Colors.Unraveled, pathColor);
-
-            chunk.NeedsInitialization = false;
-        }
-
         GenerateShape(chunk);
-        GeneratePaths(chunk);
 
         if (!disableParallel)
         {

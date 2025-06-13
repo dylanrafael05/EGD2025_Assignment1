@@ -12,7 +12,9 @@ public class ChunkMesher
     private readonly Vector3[] vertices;
     private readonly Color[] colors;
     private readonly Vector2[] uvs;
+    private readonly Vector2[] packedIsPath;
     private readonly int[] triangles;
+    private readonly bool[] isPath;
     private readonly Mesh mesh;
 
     /// <summary>
@@ -82,6 +84,7 @@ public class ChunkMesher
     public Adaptor<Vector3> Vertices => new(vertices, this);
     public Adaptor<Color> Colors => new(colors, this);
     public Adaptor<Vector2> UVs => new(uvs, this);
+    public Adaptor<Vector2> IsPath => new(packedIsPath, this);
     public IReadOnlyList<int> TrianglesUnwrapped => triangles;
     public TriAdaptor Triangles => new(this);
 
@@ -129,6 +132,7 @@ public class ChunkMesher
         mesh.SetTriangles(triangles, 0);
         mesh.SetColors(colors);
         mesh.SetUVs(0, uvs);
+        mesh.SetUVs(1, packedIsPath);
 
         // Calculate information from these parameters //
         mesh.RecalculateBounds();
@@ -186,6 +190,8 @@ public class ChunkMesher
         vertices = new Vector3[vertCount];
         colors = new Color[vertCount];
         uvs = new Vector2[vertCount];
+        packedIsPath = new Vector2[vertCount];
+        isPath = new bool[vertCount];
         triangles = new int[gridCount * gridCount * 2 * 3];
 
         mesh = new();
@@ -194,19 +200,5 @@ public class ChunkMesher
         {
             GenerateGrid();
         }
-    }
-
-    /// <summary>
-    /// Create an element by element copy of another mesher.
-    /// </summary>
-    public void CloneFrom(ChunkMesher other)
-    {
-        if (gridCount != other.gridCount || unitSideLength != other.unitSideLength)
-            throw new ArgumentException("ChunkMesher instances must only clone from those with the same size.", nameof(other));
-
-        other.vertices.CopyTo(vertices, 0);
-        other.uvs.CopyTo(uvs, 0);
-        other.colors.CopyTo(colors, 0);
-        other.triangles.CopyTo(triangles, 0);
     }
 }
