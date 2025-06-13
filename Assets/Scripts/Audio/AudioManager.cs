@@ -41,7 +41,7 @@ public class AudioManager : MonoBehaviour
     }
     void Start()
     {
-        AudioManager.instance.PlayLoop("Test", new Vector3(0,0,0));
+        AudioManager.instance.PlayLoop("Test", new Vector3(0,0,0), -0.8f);
     }
 
 
@@ -95,6 +95,17 @@ public class AudioManager : MonoBehaviour
         sourceCache[ad].loop = true;
         return ad;
     }
+    
+    public int PlayLoop(String audioName, float pitch)
+    {
+        int ad = PlayLoop(audioName);
+        if (ad == -1)
+        {
+            return -1;
+        }
+        sourceCache[ad].pitch = pitch;
+        return ad;
+    }
 
     public int PlayRandomPitch(String audioName)
     {
@@ -103,7 +114,7 @@ public class AudioManager : MonoBehaviour
         {
             return -1;
         }
-        sourceCache[ad].pitch = math.pow(0.9f,  UnityEngine.Random.Range(-1f, 1f));
+        sourceCache[ad].pitch = math.pow(0.9f, UnityEngine.Random.Range(-1f, 1f));
         return ad;
     }
 
@@ -130,6 +141,19 @@ public class AudioManager : MonoBehaviour
         sourceCache[ad].spatialBlend = 1;
         return ad;
     }
+    
+    public int PlayLoop(String audioName, Vector3 position, float pitch)
+    {
+        int ad = PlayLoop(audioName);
+        if (ad == -1)
+        {
+            return -1;
+        }
+        sourceCache[ad].transform.position = position;
+        sourceCache[ad].spatialBlend = 1;
+        sourceCache[ad].pitch = pitch;
+        return ad;
+    }
 
     public int PlayRandomPitch(String audioName, Vector3 position)
     {
@@ -138,9 +162,11 @@ public class AudioManager : MonoBehaviour
         {
             return -1;
         }
-        sourceCache[ad].pitch = math.pow(0.9f,  UnityEngine.Random.Range(-1f, 1f));
+        sourceCache[ad].pitch = math.pow(0.9f, UnityEngine.Random.Range(-1f, 1f));
         return ad;
     }
+
+
 
     public int StopGeneric(int ad)
     {

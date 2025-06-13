@@ -18,7 +18,7 @@ public class Incinerate : MonoBehaviour
             return Stagger();
         }
 
-        CampFireManager.instance.fireStrength += Time.deltaTime;
+        CampFireManager.instance.fireStrength += Time.deltaTime*3;
         if ((transform.position - CampFireManager.instance.transform.position).magnitude < 2.5)
         {
             print("Explode!!!");

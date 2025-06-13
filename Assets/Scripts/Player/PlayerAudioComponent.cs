@@ -24,7 +24,7 @@ public class PlayerAudioComponent : MonoBehaviour
                 {
                     break;
                 }
-                walkingAD = AudioManager.instance.PlayLoop("Walking");
+                walkingAD = AudioManager.instance.PlayLoop("Walking", 0.8f);
                 break;
         }
     }

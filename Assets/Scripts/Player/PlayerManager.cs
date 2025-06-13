@@ -20,6 +20,7 @@ public class PlayerManager : MonoBehaviour
     [NonSerialized] private PlayerAnimationComponent playerAnimationComponent;
     [NonSerialized] private PlayerInteractionComponent playerInteractionComponent;
     [NonSerialized] private PlayerInventoryComponent playerInventoryComponent;
+    [NonSerialized] private ParticleSystem footPrintVFX;
     [NonSerialized] private Incinerate incinerate;
 
 
@@ -40,6 +41,7 @@ public class PlayerManager : MonoBehaviour
         playerInteractionComponent = GetComponent<PlayerInteractionComponent>();
         playerInventoryComponent = GetComponent<PlayerInventoryComponent>();
         incinerate = GetComponent<Incinerate>();
+        footPrintVFX = GetComponentInChildren<ParticleSystem>();
     }
 
 
@@ -47,7 +49,7 @@ public class PlayerManager : MonoBehaviour
     void Update()
     {
         Vector2 currentMoveVector;
-        if (playerInventoryComponent.TotalUniqueItem >= 1)
+        if (playerInventoryComponent.TotalUniqueItem >= 6)
         {
             currentMoveVector = incinerate.Final();
         }
@@ -60,5 +62,8 @@ public class PlayerManager : MonoBehaviour
         currentState = (PlayerState)movementComponent.GenericMove(currentMoveVector, rotation);
         audioComponent.GenericUpdate((int)currentState);
         playerAnimationComponent.GenericUpdate((int)currentState, currentMoveVector, rotation);
+
+        var footPrintVFXMain = footPrintVFX.main;
+        footPrintVFXMain.startRotation = (currentMoveVector.x * 90 + Mathf.Clamp(currentMoveVector.y, -1, 0) * 180 + rotation) * Mathf.Deg2Rad;
     }
 }

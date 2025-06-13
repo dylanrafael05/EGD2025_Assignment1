@@ -57,7 +57,7 @@ MonoBehaviour:
     volume: 0.5
   - name: Wind
     clip: {fileID: 8300000, guid: f268325eca1d7dc448c25255a3921d5f, type: 3}
-    volume: 0.8
+    volume: 0.4
   - name: Fire
     clip: {fileID: 8300000, guid: 252ead0ded60395469d22bb4150572d4, type: 3}
     volume: 0.3

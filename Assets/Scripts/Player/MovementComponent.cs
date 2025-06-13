@@ -35,12 +35,4 @@ public class MovementComponent : MonoBehaviour
         }
         return 1;
     }
-
-    private void SnapToGround()
-    {
-        var loc = transform.position.tofloat3();
-        loc.y = GenerationUtils.StandHeightAt(loc.xz);
-        loc.xz = GeneratorManager.Instance.ClampInsideWorld(loc.xz);
-        transform.position = loc;
-    }
 }
