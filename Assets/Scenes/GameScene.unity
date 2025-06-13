@@ -903,7 +903,7 @@ MonoBehaviour:
   chunkPrefab: {fileID: 262342419577004255, guid: 0af5b68ceed945248b7217dbee3d4c6a, type: 3}
   generationCenter: {fileID: 850509088}
   generationRadius: 50
-  gridCount: 24
+  gridCount: 48
   gridSideLength: 20
   weatherShiftSpeed: 1
   fogNoiseScale: 0.03
