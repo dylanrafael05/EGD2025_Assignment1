@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class PlayerInventoryComponent : MonoBehaviour
@@ -28,6 +29,9 @@ public class PlayerInventoryComponent : MonoBehaviour
         {
             oldItem.Drop();
         }
+
+        PostProcessEffects.Instance.CollectItem().Forget();
+
         return oldItem;
     }
 

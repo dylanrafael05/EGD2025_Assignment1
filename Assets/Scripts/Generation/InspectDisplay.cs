@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class InspectDisplay : MonoBehaviour
 {
     public static InspectDisplay Instance { get; private set; }
+
     [SerializeField] GameObject inventoryContainer;
     [SerializeField] GameObject displayContainer;
     [SerializeField] Image display;
@@ -15,8 +16,10 @@ public class InspectDisplay : MonoBehaviour
     }
 
     public bool IsInspecting
-        => InputManager.instance.InspectBool
+        => (InputManager.instance.InspectBool || ForceDisplay)
         && inventory.CurrentItem;
+        
+    public bool ForceDisplay { get; set; }
 
     void Update()
     {
