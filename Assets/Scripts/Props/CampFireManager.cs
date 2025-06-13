@@ -9,7 +9,7 @@ public class CampFireManager : MonoBehaviour
 
     [NonSerialized] private CampFireVFXComponent campFireVFXComponent;
     [SerializeField] private Animator campFireAnimatorComponent;
-    [NonSerialized] private int fireStrength;
+    [SerializeField] private int fireStrength;
 
     public int TotalUsedLogs => fireStrength;
 

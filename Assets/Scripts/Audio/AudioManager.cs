@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class AudioManager : MonoBehaviour
@@ -76,6 +77,7 @@ public class AudioManager : MonoBehaviour
         activateAudioSource.volume = audioReference[audioName].volume;
         activateAudioSource.clip = audioReference[audioName].clip;
         activateAudioSource.spatialBlend = 0;
+        activateAudioSource.pitch = 1;
         activateAudioSource.Play();
 
         return ad;
@@ -103,6 +105,17 @@ public class AudioManager : MonoBehaviour
         }
         sourceCache[ad].transform.position = position;
         sourceCache[ad].spatialBlend = 1;
+        return ad;
+    }
+
+    public int PlayRandomPitch(String audioName, Vector3 position)
+    {
+        int ad = PlayGeneric(audioName, position);
+        if (ad == -1)
+        {
+            return -1;
+        }
+        sourceCache[ad].pitch = math.pow(0.9f, UnityEngine.Random.Range(-1f, 1f));
         return ad;
     }
 
