@@ -34,17 +34,17 @@ public class PlayerInteractionComponent : MonoBehaviour
             {
                 playerInventoryComponent.ObtainFireWood();
                 other.gameObject.transform.parent.GetComponent<TreeProp>().ChopDown();
-                AudioManager.instance.PlayGeneric("Wood", other.transform.position);
+                AudioManager.instance.PlayRandomPitch("Wood", other.transform.position);
             }
             else if (other.CompareTag("Item"))
             {
                 playerInventoryComponent.ReplaceItem(other.gameObject.GetComponent<ItemComponent>());
-                AudioManager.instance.PlayGeneric("Item", other.transform.position);
+                AudioManager.instance.PlayRandomPitch("Item", other.transform.position);
             }
             else if (other.CompareTag("CampFire"))
             {
                 other.GetComponent<CampFireManager>().IncreaseBurn(playerInventoryComponent.BurnInventory());
-                AudioManager.instance.PlayGeneric("Fire", other.transform.position);
+                AudioManager.instance.PlayRandomPitch("Fire", other.transform.position);
             }
 
             InputManager.instance.InteractBool = false;
