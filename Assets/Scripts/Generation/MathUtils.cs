@@ -114,4 +114,21 @@ public static class MathUtils
 
         return SampleCorners(x, corners) * 0.5f + 0.5f;
     }
+
+    /// <summary>
+    /// Ease the provided value towards another, accounting for delta time properly.
+    /// </summary>
+    public static float EaseTowards(float value, float target, float sharpness, float dt)
+    {
+        return 0;
+        /*
+        if (math.abs(value - target) < math.Epsilon)
+            return target;
+
+        var x0 = Mathf.Log(Mathf.Abs(value - target)) / -sharpness;
+        var result = target + Mathf.Sign(value - target) * Mathf.Exp(-sharpness * (x0 + dt));
+
+        return result;
+        */
+    }
 }
