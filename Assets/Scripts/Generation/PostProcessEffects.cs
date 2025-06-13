@@ -25,7 +25,7 @@ public class PostProcessEffects : MonoBehaviour
         target = 0;
         faderImage.CrossFadeAlpha(0, 0.5f, true);
         await UniTask.WaitForSeconds(1.0f);
-        
+
         InspectDisplay.Instance.ForceDisplay = false;
     }
 
@@ -51,7 +51,8 @@ public class PostProcessEffects : MonoBehaviour
         baseVignette = vignette.intensity.value;
 
         faderImage.enabled = true;
-        faderImage.CrossFadeAlpha(0, 0, false);
+        faderImage.CrossFadeAlpha(1, 0, false);
+        faderImage.CrossFadeAlpha(0, 4.0f, false);
     }
 
     void Update()

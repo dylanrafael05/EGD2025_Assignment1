@@ -229,8 +229,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 39.7, y: -29.9}
-  m_SizeDelta: {x: 37.8157, y: 31.7594}
+  m_AnchoredPosition: {x: 39.6752, y: -27.6912}
+  m_SizeDelta: {x: 37.7662, y: 36.177}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &22815828
 MonoBehaviour:
@@ -279,7 +279,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 27.85
+  m_fontSize: 31.75
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1294,58 +1294,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 768850725768599062, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.89239913
-      objectReference: {fileID: 0}
-    - target: {fileID: 768850725768599062, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.23911765
-      objectReference: {fileID: 0}
-    - target: {fileID: 768850725768599062, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.3696438
-      objectReference: {fileID: 0}
-    - target: {fileID: 768850725768599062, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.09904577
-      objectReference: {fileID: 0}
-    - target: {fileID: 768850725768599062, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 768850725768599062, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 45
-      objectReference: {fileID: 0}
-    - target: {fileID: 2767283469157438528, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
-      propertyPath: m_Size.x
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2767283469157438528, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
-      propertyPath: m_Size.y
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 2767283469157438528, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
-      propertyPath: m_Size.z
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2847689824424047689, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
-      propertyPath: rotation
-      value: -90
-      objectReference: {fileID: 0}
-    - target: {fileID: 3389028544215729542, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
-      propertyPath: m_RenderPostProcessing
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4121133005026500254, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
-      propertyPath: xAngle
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 4853027494999312258, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
-      propertyPath: moveSpeed
-      value: 14
-      objectReference: {fileID: 0}
     - target: {fileID: 5047840039211515197, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1384,26 +1332,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5047840039211515197, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6067017180366054482, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
-      propertyPath: m_ClearFlags
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6067017180366054482, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
-      propertyPath: orthographic size
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 6067017180366054482, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
-      propertyPath: m_BackGroundColor.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6067017180366054482, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
-      propertyPath: m_BackGroundColor.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6067017180366054482, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
-      propertyPath: m_BackGroundColor.r
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6752310581709941667, guid: fb41cb185cb46f644ab32e34a478d6c5, type: 3}
