@@ -22,6 +22,7 @@ public class GeneratorManager : MonoBehaviour
     public float gridSideLength;
 
     [Header("Weather Patterns")]
+    [SerializeField] private float timeToClearFog;
     [SerializeField] private float weatherShiftSpeed;
     [SerializeField] private float fogNoiseScale;
     [SerializeField] private float snowNoiseScale;
@@ -84,6 +85,7 @@ public class GeneratorManager : MonoBehaviour
     private readonly HashSet<int2> generatingChunks = new();
     private readonly Dictionary<int2, ChunkInstance> loadedChunks = new();
     private CachedWeightMap forestDampenWeight;
+    private float regenerationTime = -1000;
 
     public float UnitSideLength => gridSideLength / gridCount;
     public int GenerationRadiusInChunks => Mathf.CeilToInt(generationRadius / gridSideLength);
@@ -119,7 +121,11 @@ public class GeneratorManager : MonoBehaviour
         pos += 100;
         pos += Time.deltaTime * weatherShiftSpeed;
 
-        return Mathf.PerlinNoise(pos.x, pos.y) * 100;
+        var fogOffset = math.clamp(
+            1 - (regenerationTime - Time.time) / timeToClearFog,
+            0, 1);
+
+        return (Mathf.PerlinNoise(pos.x, pos.y) + fogOffset) * 100;
     }
 
     public float GetSnowDensity(float2 pos)
@@ -404,6 +410,30 @@ public class GeneratorManager : MonoBehaviour
     bool ChunkShouldCull(int2 chunk, int2 center)
         => math.csum(math.abs(chunk - center)) > GenerationRadiusInChunks;
 
+    public void SignalWillRegenerate()
+    {
+        regenerationTime = Time.time;
+    }
+
+    public void Regenerate()
+    {
+        var chunksToUnload = ListPool<int2>.Get();
+        chunksToUnload.AddRange(loadedChunks.Keys);
+
+        UnloadChunks(chunksToUnload);
+        ListPool<int2>.Release(chunksToUnload);
+    }
+
+    void UnloadChunks(ICollection<int2> chunksToUnload)
+    {
+        foreach (var chunk in chunksToUnload)
+        {
+            loadedChunks.Remove(chunk, out var instance);
+            ChunkCachers.UnloadChunk(instance.ID);
+            chunkPool.Release(instance);
+        }
+    }
+
     void Update()
     {
         var center = WorldToChunkPosition(generationCenter.position.tofloat3().xz);
@@ -422,13 +452,7 @@ public class GeneratorManager : MonoBehaviour
                 }
             }
 
-            foreach (var chunk in chunksToUnload)
-            {
-                loadedChunks.Remove(chunk, out var instance);
-                ChunkCachers.UnloadChunk(instance.ID);
-                chunkPool.Release(instance);
-            }
-
+            UnloadChunks(chunksToUnload);
             ListPool<int2>.Release(chunksToUnload);
         }
 

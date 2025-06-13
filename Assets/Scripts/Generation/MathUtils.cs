@@ -120,15 +120,12 @@ public static class MathUtils
     /// </summary>
     public static float EaseTowards(float value, float target, float sharpness, float dt)
     {
-        return 0;
-        /*
-        if (math.abs(value - target) < math.Epsilon)
+        if (math.abs(value - target) < math.EPSILON)
             return target;
 
-        var x0 = Mathf.Log(Mathf.Abs(value - target)) / -sharpness;
-        var result = target + Mathf.Sign(value - target) * Mathf.Exp(-sharpness * (x0 + dt));
+        var x0 = math.log(math.abs(value - target)) / -sharpness;
+        var result = target + math.sign(value - target) * math.exp(-sharpness * (x0 + dt));
 
         return result;
-        */
     }
 }

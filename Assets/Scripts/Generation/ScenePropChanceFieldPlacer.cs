@@ -19,6 +19,9 @@ public abstract class ScenePropChanceFieldPlacer : ScenePropPlacer
             var pos = chunk.Bounds.min.tofloat2() + (math.float2(offset) + 0.5f) * sampleStep;
             var nudge = UnityEngine.Random.insideUnitCircle * sampleStep / 2;
 
+            if (math.lengthsq(pos) > math.square(GeneratorManager.Instance.VoidRadius))
+                continue;
+
             pos += (float2)nudge;
             var density = GetChance(chunk.ID, pos);
 

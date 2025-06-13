@@ -13,11 +13,13 @@ public class SpecialItemPlacer : ScenePropPlacer
 
     [SerializeField] private SpecialItemEntry[] entries;
     [SerializeField] private float chanceToPlace = 0.2f;
+    [SerializeField] private PlayerInventoryComponent inventory;
 
     public void BurnSpecialItem()
     {
         index++;
         isPlaced = false;
+        location = new();
     }
 
     private bool isPlaced = false;
@@ -41,7 +43,7 @@ public class SpecialItemPlacer : ScenePropPlacer
 
         if (isPlaced)
         {
-            if (chunk.Bounds.Contains(location))
+            if (chunk.Bounds.Contains(location) && !inventory.CurrentItem)
             {
                 var prop = AttemptCreate(chunk, location, false);
                 prop.GetComponent<ItemComponent>().Specification = entries[index].specification;

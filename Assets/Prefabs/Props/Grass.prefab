@@ -335,8 +335,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bounds: {fileID: 8815961755402126326}
   randomizeRotation: 0
-  minSize: 0.9
-  maxSize: 1.1
+  minSize: 0.5
+  maxSize: 1.5
   debugGround: 0
 --- !u!1 &6206151248186628097
 GameObject:
