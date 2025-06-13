@@ -63,7 +63,7 @@ public class SpecialItemPlacer : ScenePropPlacer
             isPlaced = true;
             location = GeneratorManager.Instance.CabinLocation
                 + (float2)UnityEngine.Random.insideUnitCircle.normalized
-                * UnityEngine.Random.Range(0.2f, 0.4f)
+                * UnityEngine.Random.Range(0.1f, 0.2f)
                 * GeneratorManager.Instance.VoidRadius;
 
             // Since the organization of this function is a bit messed up
