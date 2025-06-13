@@ -46,4 +46,11 @@ public static class ParticleStormVFX
         velocityOverLifetimeModule.x = direction.x;
         velocityOverLifetimeModule.z = direction.y;
     }
+
+    public static void SetHeading(this ParticleSystem stormVFX, Vector2 direction)
+    {
+        ParticleSystem.ForceOverLifetimeModule forceOverLifetimeModule = stormVFX.forceOverLifetime;
+        forceOverLifetimeModule.x = direction.x;
+        forceOverLifetimeModule.z = direction.y;
+    }
 }

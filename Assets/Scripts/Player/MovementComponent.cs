@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class MovementComponent : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 1000;
+    [SerializeField] public float moveSpeed = 10;
     [NonSerialized] private Rigidbody rb;
 
 
@@ -34,15 +34,5 @@ public class MovementComponent : MonoBehaviour
             return 0;
         }
         return 1;
-    }
-
-    private float SnapToGround()
-    {
-        float y = GenerationUtils.GroundHeightAt(transform.position.tofloat3().xz);
-        if (float.IsNaN(y)) {
-            return 0.0f;
-        }
-        transform.position = new Vector3(transform.position.x, y, transform.position.z);
-        return y;
     }
 }

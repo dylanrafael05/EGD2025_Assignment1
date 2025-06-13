@@ -9,9 +9,9 @@ public class CampFireManager : MonoBehaviour
 
     [NonSerialized] private CampFireVFXComponent campFireVFXComponent;
     [SerializeField] private Animator campFireAnimatorComponent;
-    [SerializeField] private int fireStrength;
+    [SerializeField] public float fireStrength;
 
-    public int TotalUsedLogs => fireStrength;
+    public float TotalUsedLogs => fireStrength;
 
     void Awake()
     {

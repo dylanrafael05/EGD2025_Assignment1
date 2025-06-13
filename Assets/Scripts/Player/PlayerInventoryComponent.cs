@@ -4,10 +4,12 @@ using UnityEngine;
 public class PlayerInventoryComponent : MonoBehaviour
 {
     [SerializeField] private int totalFireWood = 0;
+     [SerializeField] private int totalUniqueItem = 0;
     [SerializeField] private int maxFireWood = 10;
     [SerializeField] private ItemComponent currentItem;
 
     public int TotalFireWood => totalFireWood;
+    public int TotalUniqueItem => totalUniqueItem;
     public int MaxFireWood => maxFireWood;
     public ItemComponent CurrentItem => currentItem;
 
@@ -43,6 +45,7 @@ public class PlayerInventoryComponent : MonoBehaviour
         if (currentItem != null)
         {
             totalValue++;
+            totalUniqueItem++;
             SpecialItemPlacer.Instance.BurnSpecialItem();
         }
         totalFireWood = 0;
