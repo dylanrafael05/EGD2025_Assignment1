@@ -31,7 +31,7 @@ public class SnowComponent : MonoBehaviour
         snowVFX[0].SetEmission(defaultEmmision + Mathf.Abs(defaultEmmision * stormStrength / 4)); snowVFX[1].SetEmission(defaultEmmision + Mathf.Abs(defaultEmmision * stormStrength / 4));
         snowVFX[0].SetStartLifeTime(defaultStartLifeTime * (1/stormStrength)); snowVFX[1].SetStartLifeTime(defaultStartLifeTime * (1/stormStrength));
         snowVFX[0].SetStartSpeed(defaultSpeed * (stormStrength)); snowVFX[1].SetStartSpeed(defaultSpeed * (stormStrength));
-        snowVFX[0].SetDirection(defaultDirection * (stormStrength)); snowVFX[1].SetDirection(defaultDirection * (stormStrength));
+        snowVFX[0].SetDirection(defaultDirection * Mathf.Pow(stormStrength, 1.4f)); snowVFX[1].SetDirection(defaultDirection * Mathf.Pow(stormStrength, 1.4f));
     }
 
     public void ClearStorm()

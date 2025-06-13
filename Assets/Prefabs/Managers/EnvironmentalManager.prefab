@@ -5507,7 +5507,7 @@ ParticleSystem:
     donutRadius: 0.2
     m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: 0, y: 0, z: 0}
-    m_Scale: {x: 100, y: 3, z: 100}
+    m_Scale: {x: 80, y: 3, z: 80}
     placementMode: 0
     m_MeshMaterialIndex: 0
     m_MeshNormalOffset: 0
@@ -9682,6 +9682,7 @@ GameObject:
   - component: {fileID: 7695613490455569409}
   - component: {fileID: 8151609359627555921}
   - component: {fileID: 891988393061411286}
+  - component: {fileID: 6896823925350467166}
   m_Layer: 0
   m_Name: EnvironmentalManager
   m_TagString: Untagged
@@ -9781,6 +9782,18 @@ MonoBehaviour:
   - {fileID: 1179357666081961900}
   defaultEmmision: 0
   defaultStartLifeTime: {x: 0, y: 0}
+--- !u!114 &6896823925350467166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2335075216182007500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bce768cc0700d9a48bb4c3cb662d6ae5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4885726316755577095
 GameObject:
   m_ObjectHideFlags: 0
