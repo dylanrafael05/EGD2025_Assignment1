@@ -292,6 +292,8 @@ public class GeneratorManager : MonoBehaviour
             vpos += (float2)chunk.Position * gridSideLength;
 
             var voidOffset = CalcVoidHeightOffset(chunk.ID, vpos);
+            if (voidOffset < -80)
+                voidOffset = -80;
 
             vertex.y = CalcTerrainHeight(chunk.ID, vpos) + voidOffset;
 
