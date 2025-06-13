@@ -1,4 +1,5 @@
 using System;
+using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -7,6 +8,7 @@ public class CampFireManager : MonoBehaviour
     public static CampFireManager instance;
 
     [NonSerialized] private CampFireVFXComponent campFireVFXComponent;
+    [SerializeField] private Animator campFireAnimatorComponent;
     [NonSerialized] private int fireStrength;
 
     public int TotalUsedLogs => fireStrength;
@@ -34,5 +36,6 @@ public class CampFireManager : MonoBehaviour
     public void IncreaseBurn(int incrementValue)
     {
         fireStrength += incrementValue;
+        campFireAnimatorComponent.SetTrigger("fanned");
     }
 }
